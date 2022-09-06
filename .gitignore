@@ -1,0 +1,7 @@
+﻿.vs
+bin
+.idea
+obj
+*.DS_Store
+.config
+Lattice.sln.DotSettings.user
