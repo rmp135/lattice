@@ -5,17 +5,6 @@
     </Content>
   </Page>
 </Document>`,
-    "Barcode Labels": `<Document>
-  <Page size="6,4" for="product in select top 30 * from Product">
-    <Content align="center middle">
-      <Column fontSize="20">
-        <Text align="center" fontSize="70" fontFamily="Libre Barcode 39">{product.ID}</Text>
-        <Text align="center">{product.Code}</Text>
-        <Text align="center" fontSize="15" fontColour="gray">{product.Description}</Text>
-      </Column>
-    </Content>
-  </Page>
-</Document>`,
     "Grouping and Aggregation": `<Document>
   <Page margin="20" orientation="landscape">
     <Header fontColour="gray" paddingBottom="10">

@@ -26,22 +26,22 @@ public class PDFController : Controller
 
     private Node NodeFromXML(XElement xmlNode)
     {
-        _ = Enum.TryParse<NodeType>(xmlNode.Name.LocalName, true, out var t);
-        var n = new Node(t);
+        _ = Enum.TryParse<NodeType>(xmlNode.Name.LocalName, true, out var nodeType);
+        var node = new Node(nodeType);
         if (!string.IsNullOrEmpty(xmlNode.Value))
         {
-            n.AddAttribute("text", xmlNode.Value);
+            node.AddAttribute("text", xmlNode.Value);
         }
         foreach (var attribute in xmlNode.Attributes())
         {
-            n.AddAttribute(attribute.Name.LocalName, attribute.Value);
+            node.AddAttribute(attribute.Name.LocalName, attribute.Value);
         }
 
         foreach (var childNode in xmlNode.Elements())
         {
-            n.AddChild(NodeFromXML(childNode));
+            node.AddChild(NodeFromXML(childNode));
         }
-        return n;
+        return node;
     }
 
     [HttpPost("")]

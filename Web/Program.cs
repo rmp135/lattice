@@ -1,17 +1,42 @@
 using System.Diagnostics;
 using Lattice;
 using System.Reflection;
+using Lattice.Builders;
+using Lattice.Web;
+using Lattice.Web.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.RegisterAll(new[]
+builder.Services.AddLattice();
+builder.Services.AddSingleton<TempStorage>();
+builder.Services.AddControllers();
+
+
+var app = builder.Build();
+
+// If we're running in Docker or similar, use the PORT environment variable.
+var port = Environment.GetEnvironmentVariable("PORT");
+if (port != null)
 {
-    Assembly.GetAssembly(typeof(Main))!, 
-    Assembly.GetAssembly(typeof(Program))!
+    builder.WebHost.UseUrls($"http://*:{port}");
+}
+
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+    app.UseExceptionHandler("/Error");
+}
+
+app.UseStaticFiles();
+app.UseRouting();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
 });
 
-// Run the serve command when running in development mode.
-if (builder.Environment.IsDevelopment())
+// Run the Vite in serve mode when running in development mode.
+if (app.Environment.IsDevelopment())
 {
     Process.Start(new ProcessStartInfo
     {
@@ -20,35 +45,5 @@ if (builder.Environment.IsDevelopment())
         WorkingDirectory = Path.Combine(Environment.CurrentDirectory, "client")
     })!.StandardInput.WriteLine("npm run serve");
 }
-
-// Add services to the container.
-builder.Services.AddControllers();
-    
-var app = builder.Build();
-
-if (app.Environment.IsProduction())
-{
-    builder.WebHost.UseUrls($"http://*:{Environment.GetEnvironmentVariable("PORT")}");
-}
-
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    app.UseDeveloperExceptionPage();
-    app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
-
-// app.UseHttpsRedirection();
-
-app.UseStaticFiles();
-
-app.UseRouting();
-
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllers();
-});
 
 app.Run();

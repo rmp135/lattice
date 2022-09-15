@@ -6,12 +6,13 @@ public enum ExportScope
     Singleton
 }
 
-public class ExportAttribute : Attribute
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
+internal class ExportAttribute : Attribute
 {
     public Type Type { get; }
-    public ExportScope Scope { get; }
+    private ExportScope Scope { get; }
 
-    public ExportAttribute(Type type, ExportScope scope = ExportScope.Transient)
+    public ExportAttribute(Type type, ExportScope scope = ExportScope.Singleton)
     {
         Type = type;
         Scope = scope;

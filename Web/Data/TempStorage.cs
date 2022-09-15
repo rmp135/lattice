@@ -1,6 +1,5 @@
 ﻿namespace Lattice.Web.Data;
 
-[Export(typeof(TempStorage), ExportScope.Singleton)]
 public class TempStorage
 {
     private IList<StoreItem> storage = new List<StoreItem>();
@@ -28,10 +27,5 @@ public class StoreItem
     public StoreItem(string value)
     {
         Value = value;
-    }
-
-    public static StoreItem Create(string value)
-    {
-        return new StoreItem(value);
     }
 }
