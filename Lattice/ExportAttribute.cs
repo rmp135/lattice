@@ -6,6 +6,9 @@ public enum ExportScope
     Singleton
 }
 
+/// <summary>
+/// Internal helper attribute that will auto-import into the DI container.
+/// </summary>
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
 internal class ExportAttribute : Attribute
 {

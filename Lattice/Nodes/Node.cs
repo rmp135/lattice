@@ -1,6 +1,4 @@
 ﻿using System.Collections;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Lattice.Nodes;
 
@@ -12,8 +10,14 @@ public class Node
 
     public Guid ID { get; } = Guid.NewGuid();
 
+    /// <summary>
+    /// The bound context that belongs to this <see cref="Node"/>.
+    /// </summary>
     public IDictionary<string, ContextValue> Context { get; private init; } = new Dictionary<string, ContextValue>();
 
+    /// <summary>
+    /// The list of attributes that belong to this <see cref="Node"/>.
+    /// </summary>
     public IList<KeyValuePair<string, string>> Attributes { get; private set; } = new List<KeyValuePair<string, string>>();
 
     public Node(NodeType type)
@@ -21,6 +25,10 @@ public class Node
         Type = type;
     }
 
+    /// <summary>
+    /// Adds a child to the current <see cref="Node"/>, binding the parent.
+    /// </summary>
+    /// <param name="node">The child <see cref="Node"/> to add.</param>
     public Node AddChild(Node node)
     {
         node.ParentNode = this;
@@ -28,6 +36,11 @@ public class Node
         return this;
     }
 
+    /// <summary>
+    /// Adds a child to the current <see cref="Node"/> at a given index.
+    /// </summary>
+    /// <param name="node">The child <see cref="Node"/> to add.</param>
+    /// <param name="index">The index location to add the child.</param>
     public Node AddChildAt(Node node, int index)
     {
         node.ParentNode = this;
@@ -35,32 +48,55 @@ public class Node
         return this;
     }
 
+    /// <summary>
+    /// Removes a given <see cref="Node"/> from the <see cref="ChildNodes"/>, also removes the parent link.
+    /// </summary>
+    /// <param name="node">The child node to remove.</param>
     public Node RemoveChild(Node node)
     {
         node.ParentNode = null;
         ChildNodes.Remove(node);
         return this;
     }
-
+    
+    /// <summary>
+    /// Adds an attribute to the <see cref="Node"/>.
+    /// </summary>
+    /// <param name="key">The attribute key.</param>
+    /// <param name="value">The attribute value.</param>
     public Node AddAttribute(string key, string value)
     {
         Attributes.Add(new KeyValuePair<string, string>(key, value));
         return this;
     }
-
+    
+    /// <summary>
+    /// Replaces an <see cref="Context"/> item by removing it by key and adding a new one.
+    /// </summary>
+    /// <param name="key">The key to replace.</param>
+    /// <param name="value">The new context value.</param>
     public Node ReplaceContextKey(string key, ContextValue value)
     {
         Context.Remove(key);
         Context.Add(key, value);
         return this;
     }
-
+    
+    /// <summary>
+    /// Removes a given attribute by key.
+    /// </summary>
+    /// <param name="key">The key to remove.</param>
     public Node RemoveAttribute(string key)
     {
         Attributes = Attributes.Where(a => !a.Key.Equals(key, StringComparison.OrdinalIgnoreCase)).ToList();
         return this;
     }
 
+    /// <summary>
+    /// Retrieves the last attribute of a given key.
+    /// </summary>
+    /// <param name="key">The key of the attribute to find.</param>
+    /// <returns>The last found attribute of that key.</returns>
     public string? GetAttribute(string key)
     {
         return Attributes
@@ -68,6 +104,11 @@ public class Node
             .Value;
     }
 
+    /// <summary>
+    /// Attempts to parse <see cref="GetAttribute"/> as a float.
+    /// </summary>
+    /// <param name="key">The key of the attribute to convert.</param>
+    /// <returns></returns>
     public float? GetAttributeFloat(string key)
     {
         var asString = GetAttribute(key);
@@ -76,6 +117,11 @@ public class Node
         return result;
     }
 
+    /// <summary>
+    /// Attempts to parse <see cref="GetAttribute"/> as an int.
+    /// </summary>
+    /// <param name="key">The key of the attribute to convert.</param>
+    /// <returns></returns>
     public int? GetAttributeInt(string key)
     {
         var asString = GetAttribute(key);
@@ -84,11 +130,20 @@ public class Node
         return result;
     }
 
+    /// <summary>
+    /// Retrieves a value from the <see cref="Context"/>, or traverses back to find one. 
+    /// </summary>
+    /// <param name="key">The context key.</param>
+    /// <returns>The found context value, or null if one does not exist.</returns>
     public ContextValue? GetContextValue(string key)
     {
         return Context.TryGetValue(key, out var value) ? value : ParentNode?.GetContextValue(key);
     }
 
+    /// <summary>
+    /// Clones a <see cref="Node"/>, and all properties of that <see cref="Node"/>.
+    /// </summary>
+    /// <returns>The cloned <see cref="Node"/>.</returns>
     public Node DeepClone()
     {
         var node = new Node(Type)
@@ -105,6 +160,9 @@ public class Node
     }
 }
 
+/// <summary>
+/// A base context value consisting of a string key and object value.
+/// </summary>
 public abstract class ContextValue :IEnumerable<IDictionary<string, object>>
 {
     public abstract IEnumerator<IDictionary<string, object>> GetEnumerator();
@@ -115,6 +173,9 @@ public abstract class ContextValue :IEnumerable<IDictionary<string, object>>
     }
 }
 
+/// <summary>
+/// A context that has been grouped by a particular key. The grouped values can be enumerated.
+/// </summary>
 public class GroupedContextValue : ContextValue
 {
     private readonly IEnumerable<IDictionary<string, object>> data;
@@ -137,6 +198,9 @@ public class GroupedContextValue : ContextValue
     }
 }
 
+/// <summary>
+/// An ungrouped context value. Attempting to enumerate the values will enumerate the string chars.
+/// </summary>
 public class StringContextValue : ContextValue
 {
     private readonly string value;

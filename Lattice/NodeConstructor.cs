@@ -1,7 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using Lattice.Nodes;
 using Lattice.Sources;
-using org.matheval.Functions;
 
 namespace Lattice;
 
@@ -10,14 +9,22 @@ public class NodeConstructor
 {
     private readonly ContextReplacer ContextReplacer;
 
+    /// <summary>
+    /// Expands a node tree, assigning context from a data source.
+    /// </summary>
     public NodeConstructor(ContextReplacer contextReplacer)
     {
         ContextReplacer = contextReplacer;
     }
 
+    /// <summary>
+    /// Expands and applies context to the node tree, using an empty source.
+    /// </summary>
     public Task ConstructAsync(Node node) => ConstructAsync(node, new FakeSource());
 
-    /// <summary>Expands and applies context to the node tree.</summary>
+    /// <summary>
+    /// Expands and applies context to the node tree.
+    /// </summary>
     public async Task ConstructAsync(Node node, ISource source)
     {
         await BindAsync(node, source);
@@ -35,6 +42,10 @@ public class NodeConstructor
         }
     }
 
+    /// <summary>
+    /// Removes all <see cref="NodeType.Virtual"/> nodes, re-binding context to the children.
+    /// </summary>
+    /// <param name="node">The node that contains the virtual nodes.</param>
     private void DissolveVirtualNodes(Node node)
     {
         var childNodes = node.ChildNodes.Where(a => a.Type == NodeType.Virtual).ToArray();
@@ -53,6 +64,11 @@ public class NodeConstructor
         }
     }
     
+    /// <summary>
+    /// Binds context to a <see cref="Node"/> without expanding into a loop.
+    /// </summary>
+    /// <param name="node">The <see cref="Node"/> to bind context to.</param>
+    /// <param name="source">The <see cref="ISource"/> to take context values from.</param>
     private async Task BindAsync(Node node, ISource source)
     {
         var bindStr = node.GetAttribute("bind");
@@ -67,6 +83,12 @@ public class NodeConstructor
         node.ReplaceContextKey($"{contextKey}", new GroupedContextValue(contextKey, dataArr));
     }
     
+    /// <summary>
+    /// Expands a "for x in y" loop using context from a <see cref="Node"/> and <see cref="ISource"/>. Handles grouped and ungrouped data sets.
+    /// </summary>
+    /// <param name="node">The <see cref="Node"/> to expand.</param>
+    /// <param name="source">The <see cref="ISource"/> to take context values from.</param>
+    /// <returns></returns>
     private async Task<IEnumerable<Node>> ExpandForAsync(Node node, ISource source)
     {
         var repeatStr = node.GetAttribute("for");
@@ -88,6 +110,13 @@ public class NodeConstructor
         return ExpandForWithData(node, contextKey, data);
     }
 
+    /// <summary>
+    /// Expands a for loop, binding the data and ordering the nodes.
+    /// </summary>
+    /// <param name="node">The <see cref="Node"/> to expand.</param>
+    /// <param name="contextKey">The context key of for the "for x in {context}" attribute.</param>
+    /// <param name="data">The data from either the <see cref="ISource"/> or a <see cref="GroupedContextValue"/>.</param>
+    /// <returns>Either the new expanded nodes, the the child nodes of the input node.</returns>
     private IEnumerable<Node> ExpandForWithData(Node node, string contextKey, IEnumerable<IDictionary<string, object>> data)
     {
         node.RemoveAttribute("for");
@@ -98,17 +127,17 @@ public class NodeConstructor
 
         var dataArr = data;
 
-        var containsKey = (IEnumerable<IDictionary<string, object>> d, string key) =>
+        var containsKey = (IEnumerable<IDictionary<string, object>> dict, string key) =>
         {
-            if (!d.Any()) return false;
-            return d.FirstOrDefault().Select(s => s.Key).Contains(key);
+            if (!dict.Any()) return false;
+            return dict.FirstOrDefault().Select(s => s.Key).Contains(key);
         };
         
         if (!string.IsNullOrEmpty(orderByAsc) && containsKey(dataArr, orderByAsc))
         {
             dataArr = dataArr.OrderBy(a => a[orderByAsc]);
         }
-        if (!string.IsNullOrEmpty(orderByDesc) && containsKey(dataArr, orderByDesc))
+        else if (!string.IsNullOrEmpty(orderByDesc) && containsKey(dataArr, orderByDesc))
         {
             dataArr = dataArr.OrderByDescending(a => a[orderByDesc]);
         }
@@ -168,6 +197,11 @@ public class NodeConstructor
     }
 
 
+    /// <summary>
+    /// Expands a "repeat" loop, deep cloning the <see cref="Node"/> a number of times.
+    /// </summary>
+    /// <param name="node">The <see cref="Node"/> to repeat.</param>
+    /// <returns>Either the new expanded nodes, the the child nodes of the input node.</returns>
     private IEnumerable<Node> ExpandRepeat(Node node)
     {
         var repeatStr = node.GetAttribute("repeat");

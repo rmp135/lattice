@@ -3,9 +3,18 @@ using System.Text;
 
 namespace Lattice;
 
+/// <summary>
+/// Methods concerning replacing the tokens from context.
+/// </summary>
 [Export(typeof(ContextReplacer))]
 public class ContextReplacer
 {
+    /// <summary>
+    /// Replaces all tokens in a given text string, given the context of a Node.
+    /// </summary>
+    /// <param name="text">The text string to replace tokens for.</param>
+    /// <param name="node">The <see cref="Node"/> context to use.</param>
+    /// <returns>The original text string with tokens replaced.</returns>
     public string ReplaceTokens(string text, Node node)
     {
         var tokens = GetTokens(text);
@@ -24,6 +33,11 @@ public class ContextReplacer
         return builder.ToString();
     }
 
+    /// <summary>
+    /// Returns tokens for a given text string.
+    /// </summary>
+    /// <param name="text">The string to extract tokens from.</param>
+    /// <returns>The extracted tokens.</returns>
     public IEnumerable<TokenResult> GetTokens(string text)
     {
         var currentText = new StringBuilder();
@@ -58,6 +72,12 @@ public class TokenResult
         IsToken = isToken;
     }
 
+    /// <summary>
+    /// Whether the given TokenResult is actually a token.
+    /// </summary>
     public bool IsToken { get; }
+    /// <summary>
+    /// The text content of the TokenResult.
+    /// </summary>
     public string Text { get; }
 }
