@@ -89,12 +89,12 @@ public interface IAggregator
 
 public abstract class BaseAggregator : IAggregator
 {
-    protected virtual Regex regex { get; }
+    protected abstract Regex Regex { get; }
 
     public string Aggregate(Node node, string value)
     {
-        var matches = regex.Matches(value);
-        if (!regex.Matches(value).Any())
+        var matches = Regex.Matches(value);
+        if (!Regex.Matches(value).Any())
         {
             return value;
         }
@@ -119,7 +119,7 @@ public abstract class BaseAggregator : IAggregator
 [Export(typeof(IAggregator))]
 public class SumAggregator: BaseAggregator
 {
-    protected override Regex regex { get; } =  new Regex(@"SUM\((\w+)\.(\w+)\)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    protected override Regex Regex { get; } =  new Regex(@"SUM\((\w+)\.(\w+)\)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
     
     protected override string Aggregate(IEnumerable<KeyValuePair<string, object>> set, GroupCollection groups)
     {
@@ -136,7 +136,7 @@ public class SumAggregator: BaseAggregator
 [Export(typeof(IAggregator))]
 public class AvgAggregator: BaseAggregator
 {
-    protected override Regex regex { get; } =  new Regex(@"(?:AVG|AVERAGE)\((\w+)\.(\w+)(?:,(\W*[0-9]+))?\)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    protected override Regex Regex { get; } = new Regex(@"(?:AVG|AVERAGE)\((\w+)\.(\w+)(?:,(\W*[0-9]+))?\)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
     
     protected override string Aggregate(IEnumerable<KeyValuePair<string, object>> set, GroupCollection groups)
     {
@@ -161,7 +161,7 @@ public class AvgAggregator: BaseAggregator
 [Export(typeof(IAggregator))]
 public class MinAggregator: BaseAggregator
 {
-    protected override Regex regex { get; } =  new Regex(@"MIN\((\w+)\.(\w+)\)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    protected override Regex Regex { get; } = new Regex(@"MIN\((\w+)\.(\w+)\)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
     
     protected override string Aggregate(IEnumerable<KeyValuePair<string, object>> set, GroupCollection groups)
     {
@@ -179,7 +179,7 @@ public class MinAggregator: BaseAggregator
 [Export(typeof(IAggregator))]
 public class MaxAggregator: BaseAggregator
 {
-    protected override Regex regex { get; } =  new Regex(@"MAX\((\w+)\.(\w+)\)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    protected override Regex Regex { get; } = new Regex(@"MAX\((\w+)\.(\w+)\)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
     
     protected override string Aggregate(IEnumerable<KeyValuePair<string, object>> set, GroupCollection groups)
     {
