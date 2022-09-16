@@ -4,8 +4,21 @@ using Lattice.Sources;
 
 namespace Lattice;
 
+public interface INodeConstructor
+{
+    /// <summary>
+    /// Expands and applies context to the node tree, using an empty source.
+    /// </summary>
+    Task ConstructAsync(Node node);
+
+    /// <summary>
+    /// Expands and applies context to the node tree.
+    /// </summary>
+    Task ConstructAsync(Node node, ISource source);
+}
+
 [Export(typeof(NodeConstructor))]
-public class NodeConstructor
+internal class NodeConstructor : INodeConstructor
 {
     private readonly ContextReplacer ContextReplacer;
 
@@ -17,14 +30,8 @@ public class NodeConstructor
         ContextReplacer = contextReplacer;
     }
 
-    /// <summary>
-    /// Expands and applies context to the node tree, using an empty source.
-    /// </summary>
     public Task ConstructAsync(Node node) => ConstructAsync(node, new FakeSource());
 
-    /// <summary>
-    /// Expands and applies context to the node tree.
-    /// </summary>
     public async Task ConstructAsync(Node node, ISource source)
     {
         await BindAsync(node, source);
@@ -46,7 +53,7 @@ public class NodeConstructor
     /// Removes all <see cref="NodeType.Virtual"/> nodes, re-binding context to the children.
     /// </summary>
     /// <param name="node">The node that contains the virtual nodes.</param>
-    private void DissolveVirtualNodes(Node node)
+    public void DissolveVirtualNodes(Node node)
     {
         var childNodes = node.ChildNodes.Where(a => a.Type == NodeType.Virtual).ToArray();
         foreach (var childNode in childNodes)
@@ -69,7 +76,7 @@ public class NodeConstructor
     /// </summary>
     /// <param name="node">The <see cref="Node"/> to bind context to.</param>
     /// <param name="source">The <see cref="ISource"/> to take context values from.</param>
-    private async Task BindAsync(Node node, ISource source)
+    public async Task BindAsync(Node node, ISource source)
     {
         var bindStr = node.GetAttribute("bind");
         if (bindStr is null) return;
@@ -89,7 +96,7 @@ public class NodeConstructor
     /// <param name="node">The <see cref="Node"/> to expand.</param>
     /// <param name="source">The <see cref="ISource"/> to take context values from.</param>
     /// <returns></returns>
-    private async Task<IEnumerable<Node>> ExpandForAsync(Node node, ISource source)
+    public async Task<IEnumerable<Node>> ExpandForAsync(Node node, ISource source)
     {
         var repeatStr = node.GetAttribute("for");
         if (repeatStr is null) return node.ChildNodes;
@@ -117,7 +124,7 @@ public class NodeConstructor
     /// <param name="contextKey">The context key of for the "for x in {context}" attribute.</param>
     /// <param name="data">The data from either the <see cref="ISource"/> or a <see cref="GroupedContextValue"/>.</param>
     /// <returns>Either the new expanded nodes, the the child nodes of the input node.</returns>
-    private IEnumerable<Node> ExpandForWithData(Node node, string contextKey, IEnumerable<IDictionary<string, object>> data)
+    public IEnumerable<Node> ExpandForWithData(Node node, string contextKey, IEnumerable<IDictionary<string, object>> data)
     {
         node.RemoveAttribute("for");
         var parentNode = node.ParentNode;
@@ -202,7 +209,7 @@ public class NodeConstructor
     /// </summary>
     /// <param name="node">The <see cref="Node"/> to repeat.</param>
     /// <returns>Either the new expanded nodes, the the child nodes of the input node.</returns>
-    private IEnumerable<Node> ExpandRepeat(Node node)
+    public IEnumerable<Node> ExpandRepeat(Node node)
     {
         var repeatStr = node.GetAttribute("repeat");
         if (repeatStr is null || !int.TryParse(repeatStr, out var repeat)) return node.ChildNodes;

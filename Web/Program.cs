@@ -11,7 +11,6 @@ builder.Services.AddLattice();
 builder.Services.AddSingleton<TempStorage>();
 builder.Services.AddControllers();
 
-
 var app = builder.Build();
 
 // If we're running in Docker or similar, use the PORT environment variable.
@@ -21,19 +20,19 @@ if (port != null)
     builder.WebHost.UseUrls($"http://*:{port}");
 }
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
     app.UseExceptionHandler("/Error");
 }
 
-app.UseStaticFiles();
 app.UseRouting();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
 });
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
 // Run the Vite in serve mode when running in development mode.
 if (app.Environment.IsDevelopment())

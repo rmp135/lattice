@@ -4,6 +4,7 @@ using Lattice.Builders;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
+using Lattice.Sources;
 using Lattice.Web.Data;
 using Lattice.Web.Data.Sources;
 using Node = Lattice.Nodes.Node;
@@ -13,11 +14,13 @@ namespace Lattice.Web.Routes;
 [Route("api/[controller]")]
 public class PDFController : Controller
 {
-    private readonly NodeConstructor NodeConstructor;
-    private readonly DocumentBuilder DocumentBuilder;
+    private readonly INodeConstructor NodeConstructor;
+    private readonly IDocumentBuilder DocumentBuilder;
     private readonly TempStorage TempStorage;
+
+    private readonly ISource _source = new CSVSource("Data/Sources/Elements.csv");
     
-    public PDFController(NodeConstructor nodeConstructor, DocumentBuilder documentBuilder, TempStorage tempStorage)
+    public PDFController(INodeConstructor nodeConstructor, IDocumentBuilder documentBuilder, TempStorage tempStorage)
     {
         NodeConstructor = nodeConstructor;
         DocumentBuilder = documentBuilder;
@@ -75,7 +78,7 @@ public class PDFController : Controller
         var document = XDocument.Parse(xmlAsString);
 
         var rootNode = NodeFromXML(document.Root);
-        await NodeConstructor.ConstructAsync(rootNode, new CSVSource("Data/Sources/Elements.csv"));
+        await NodeConstructor.ConstructAsync(rootNode, _source);
         var stream = new MemoryStream();
         DocumentBuilder.Build(rootNode).GeneratePdf(stream);
         stream.Position = 0;
