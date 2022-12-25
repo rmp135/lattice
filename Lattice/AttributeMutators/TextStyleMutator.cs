@@ -42,10 +42,16 @@ public class TextStyleMutator
         {
             style = emp switch
             {
-                "bold" => style.Bold(),
                 "italic" => style.Italic(),
-                "extrabold" => style.ExtraBold(),
-                "semibold" => style.SemiBold(),
+                "thin" => style.Thin(),
+                "extraLight" => style.ExtraLight(),
+                "light" => style.Light(),
+                "medium" => style.Medium(),
+                "semiBold" => style.SemiBold(),
+                "bold" => style.Bold(),
+                "extraBold" => style.ExtraBold(),
+                "black" => style.Black(),
+                "extraBlack" => style.ExtraBlack(),
                 "underline" => style.Underline(),
                 "strikethrough" => style.Strikethrough(),
                 "superscript" => style.Superscript(),
