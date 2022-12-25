@@ -17,8 +17,8 @@ public interface INodeConstructor
     Task ConstructAsync(Node node, ISource source);
 }
 
-[Export(typeof(NodeConstructor))]
-internal class NodeConstructor : INodeConstructor
+[Export(typeof(INodeConstructor))]
+public class NodeConstructor : INodeConstructor
 {
     private readonly ContextReplacer ContextReplacer;
 
@@ -36,14 +36,15 @@ internal class NodeConstructor : INodeConstructor
     {
         await BindAsync(node, source);
         // Loops remove the current node and replace them with a set.
-        var childNodes = ExpandRepeat(node);
+        var childNodes = ExpandRepeat(node).ToArray();
         if (ReferenceEquals(childNodes, node.ChildNodes)) // If the child nodes are returned, no manipulation took place.
         {
             childNodes = (await ExpandForAsync(node, source)).ToArray();
         }
 
-        foreach (var childNode in childNodes)
+        for (var i = 0; i < childNodes.Length; i++)
         {
+            var childNode = childNodes[i];
             await ConstructAsync(childNode, source);
             DissolveVirtualNodes(childNode);
         }
