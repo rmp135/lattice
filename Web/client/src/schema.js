@@ -68,6 +68,18 @@ const commonAttributes = [
     "options": null
   },
   {
+    "name": "letterSpacing",
+    "description": "Point size increase from the default spacing between letters",
+    "detail": "font attribute",
+    "options": null
+  },
+  {
+    "name": "lineHeight",
+    "description": "Point size of space between lines",
+    "detail": "font attribute",
+    "options": null
+  },
+  {
     "name": "fontEmphasis",
     "description": "Emphasis for fonts. Can be space separated",
     "detail": "font attribute",

@@ -18,19 +18,35 @@ public class TextStyleMutator
 
     public TextStyle Mutate(TextStyle textStyle, Node node)
     {
-        var fontSize = node.GetAttributeInt("fontSize");
-        var fontColour = node.GetAttribute("fontColour");
-        var fontFamily = node.GetAttribute("fontFamily");
         var style = textStyle;
+        
+        var lineHeight = node.GetAttributeFloat("lineHeight");
+        if (lineHeight is not null)
+        {
+            style = style.LineHeight(lineHeight.Value);
+        }
+        
+        var letterSpacing  = node.GetAttributeFloat("letterSpacing");
+        if (letterSpacing is not null)
+        {
+            style = style.LetterSpacing(letterSpacing.Value);
+        }
+        
+        
+        var fontFamily = node.GetAttribute("fontFamily");
         if (fontFamily is not null)
         {
             style = style.FontFamily(fontFamily);
         }
+        
+        var fontColour = node.GetAttribute("fontColour");
         if (fontColour is not null)
         {
             fontColour = ContextReplacer.ReplaceTokens(fontColour, node);
             style = style.FontColor(ColourConverter.ConvertToHex(fontColour));
         }
+        
+        var fontSize = node.GetAttributeFloat("fontSize");
         if (fontSize is not null)
         {
             style = style.FontSize(fontSize.Value);
