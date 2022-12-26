@@ -11,12 +11,12 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="CsvHelper" Version="28.0.1" />
+      <PackageReference Include="CsvHelper" Version="30.0.1" />
       <PackageReference Include="Dapper" Version="2.0.123" />
-      <PackageReference Include="HarfBuzzSharp.NativeAssets.Linux" Version="2.8.2.2" />
-      <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0-rc.1.22426.10" />
-      <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.2" />
-      <PackageReference Include="SkiaSharp.NativeAssets.macOS" Version="2.88.2" />
+      <PackageReference Include="HarfBuzzSharp.NativeAssets.Linux" Version="2.8.2.3" />
+      <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0" />
+      <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.3" />
+      <PackageReference Include="SkiaSharp.NativeAssets.macOS" Version="2.88.3" />
     </ItemGroup>
 
     <ItemGroup>
