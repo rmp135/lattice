@@ -38,7 +38,7 @@ public class TextStyleMutator
         
         var emphasis = (node.GetAttribute("fontEmphasis") ?? "").Split(" ");
        
-        foreach (var emp  in emphasis)
+        foreach (var emp in emphasis)
         {
             style = emp switch
             {

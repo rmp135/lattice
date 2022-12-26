@@ -72,9 +72,20 @@ const commonAttributes = [
     "description": "Emphasis for fonts. Can be space separated",
     "detail": "font attribute",
     "options": [
-      "bold",
       "italic",
-      "underline"
+      "thin",
+      "extraLight",
+      "light",
+      "medium",
+      "semiBold",
+      "bold",
+      "extraBold",
+      "black",
+      "extraBlack",
+      "underline",
+      "strikethrough",
+      "superscript",
+      "subscript"
     ]
   },
   {
@@ -114,6 +125,42 @@ const commonAttributes = [
     "options": []
   },
   {
+    "name": "borderLeft",
+    "description": "Decimal point width for the left border",
+    "detail": "style attribute",
+    "options": []
+  },
+  {
+    "name": "borderRight",
+    "description": "Decimal point width for the right border",
+    "detail": "style attribute",
+    "options": []
+  },
+  {
+    "name": "borderTop",
+    "description": "Decimal point width for the top border",
+    "detail": "style attribute",
+    "options": []
+  },
+  {
+    "name": "borderBottom",
+    "description": "Decimal point width for the bottom border",
+    "detail": "style attribute",
+    "options": []
+  },
+  {
+    "name": "borderVertical",
+    "description": "Decimal point width for the vertical borders",
+    "detail": "style attribute",
+    "options": []
+  },
+  {
+    "name": "borderHorizontal",
+    "description": "Decimal point width for the horizontal borders",
+    "detail": "style attribute",
+    "options": []
+  },
+  { 
     "name": "borderColour",
     "description": "Colour of the border. Hex code or common HTML colour code (US spelling)",
     "detail": "style attribute",
