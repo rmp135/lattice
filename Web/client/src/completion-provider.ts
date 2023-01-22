@@ -148,7 +148,6 @@ export function getXmlCompletionProvider(monaco) {
   return {
     triggerCharacters: ['<', ' '],
     provideCompletionItems: function (model, position, completionContext) {
-      let i;
       // get editor content before the pointer
       let textUntilPosition: string = model.getValueInRange({
         startLineNumber: 1,
@@ -205,7 +204,7 @@ export function getXmlCompletionProvider(monaco) {
 
 export function getXmlHoverProvider(monaco) {
   return {
-    provideHover: function (model, position, token) {
+    provideHover: function (model, position) {
       let wordInfo = model.getWordAtPosition(position);
       if (!wordInfo)
         return;

@@ -1,32 +1,38 @@
-<style scoped>
-  #editor {
-    height: 100vh;
-  }
+<style scoped lang="scss">
   .main {
+    height: 100%;
+  }
+  .container {
+    select {
+      height: 1rem;
+    }
     display: grid;
     grid-template-columns: repeat(2, 1fr);
+    grid-column-gap: 10px;
+    height: 100%;
   }
   iframe {
     width: 100%;
     height: 100%;
+    border: none;
   }
 </style>
 
 <template>
   <div class="main">
-    <div>
-      <select @change="onLoadExample($event.target.value)">
-        <option v-for="(text, name) in Examples" :value="text">{{name}}</option>
-      </select>
+    <select @change="onLoadExample($event.target.value)">
+      <option v-for="(text, name) in Examples" :value="text">{{name}}</option>
+    </select>
+    <div class="container">
       <div id="editor" />
+      <iframe :src="iframeSrc"/>
     </div>
-    <iframe :src="iframeSrc"/>
   </div>
 </template>
 
 <script setup>
 import * as monaco from 'monaco-editor'
-import {onMounted, ref, watch} from 'vue'
+import { onMounted, ref } from 'vue'
 import { getXmlCompletionProvider, getXmlHoverProvider } from './completion-provider'
 import { debounce } from 'lodash'
 import Examples from "./examples"
@@ -59,7 +65,7 @@ async function refreshPreview() {
     },
     body: val
   })
-  if (response.status === 400){
+  if (response.status === 400) {
     const body = await response.json()
     monaco.editor.setModelMarkers(editor.getModel(), "owner", [{
       severity: monaco.MarkerSeverity.Error,
@@ -70,7 +76,7 @@ async function refreshPreview() {
       message: body.message
     }])
   }
-  if (response.status === 200){
+  if (response.status === 200) {
     const textBody = await response.text()
     iframeSrc.value = `api/pdf?id=${textBody}`
   }

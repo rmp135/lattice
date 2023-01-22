@@ -1,0 +1,10 @@
+﻿body {
+  margin: 0;
+  height: 100vh;
+  background: dimgray;
+}
+
+#app {
+  height: calc(100vh - 4rem);
+  padding: 1rem;
+}
