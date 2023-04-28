@@ -37,7 +37,7 @@ public class NodeConstructor : INodeConstructor
         await BindAsync(node, source);
         // Loops remove the current node and replace them with a set.
         var childNodes = ExpandRepeat(node).ToArray();
-        if (ReferenceEquals(childNodes, node.ChildNodes)) // If the child nodes are returned, no manipulation took place.
+        if (childNodes.SequenceEqual(node.ChildNodes)) // If the child nodes are returned, no manipulation took place.
         {
             childNodes = (await ExpandForAsync(node, source)).ToArray();
         }
