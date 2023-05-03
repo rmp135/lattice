@@ -8,11 +8,15 @@ namespace Lattice.Builders;
 public class ContainerBuilder
 {
     private readonly Lazy<IEnumerable<IContainerBuilder>> ContainerBuilders;
+    private readonly IEnumerable<ILatticePlugin> Plugins;
 
-    public ContainerBuilder(IServiceProvider serviceProvider)
+    public ContainerBuilder(IServiceProvider serviceProvider,
+        IEnumerable<ILatticePlugin> plugins
+    )
     {
         // Because of the self-referencing nature of the builders, we must lazy load them.
         ContainerBuilders = new Lazy<IEnumerable<IContainerBuilder>>(serviceProvider.GetServices<IContainerBuilder>);
+        Plugins = plugins;
     }
 
     /// <summary>
@@ -27,7 +31,6 @@ public class ContainerBuilder
             BuildSingleNode(childNode, containerFunc);
         }
     }
-
     
     /// <summary>
     /// Builds a single <see cref="Node"/>, using a factory function for the container that contains it. 
@@ -38,6 +41,8 @@ public class ContainerBuilder
     {
         var builder = ContainerBuilders.Value.FirstOrDefault(c => c.Type == node.Type);
         builder?.Build(node, containerFunc());
+        var plugin = Plugins.FirstOrDefault(p => p.Tag.Equals(node.Tag, StringComparison.OrdinalIgnoreCase));
+        plugin?.Build(node, containerFunc());
     }
 
     /// <summary>

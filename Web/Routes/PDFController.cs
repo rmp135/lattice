@@ -29,8 +29,7 @@ public class PDFController : Controller
 
     private Node NodeFromXML(XElement xmlNode)
     {
-        _ = Enum.TryParse<NodeType>(xmlNode.Name.LocalName, true, out var nodeType);
-        var node = new Node(nodeType);
+        var node = new Node(xmlNode.Name.LocalName);
         if (!string.IsNullOrEmpty(xmlNode.Value))
         {
             node.AddAttribute("text", xmlNode.Value);

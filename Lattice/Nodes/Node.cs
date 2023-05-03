@@ -4,6 +4,7 @@ namespace Lattice.Nodes;
 
 public class Node
 {
+    public string Tag { get; set; }
     public NodeType Type { get; }
     public IList<Node> ChildNodes { get; } = new List<Node>();
     public Node? ParentNode { get; private set; }
@@ -20,9 +21,16 @@ public class Node
     /// </summary>
     public IList<KeyValuePair<string, string>> Attributes { get; private set; } = new List<KeyValuePair<string, string>>();
 
+    public Node(string tag)
+    {
+        Tag = tag;
+        Type = Enum.TryParse<NodeType>(tag, true, out var type) ? type : NodeType.Plugin;
+    }
+    
     public Node(NodeType type)
     {
         Type = type;
+        Tag = type.ToString();
     }
 
     /// <summary>
@@ -146,7 +154,7 @@ public class Node
     /// <returns>The cloned <see cref="Node"/>.</returns>
     public Node DeepClone()
     {
-        var node = new Node(Type)
+        var node = new Node(Tag)
         {
             Attributes = new List<KeyValuePair<string, string>>(Attributes),
             Context = new Dictionary<string, ContextValue>(Context),
