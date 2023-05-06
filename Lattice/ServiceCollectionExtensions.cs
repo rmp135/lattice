@@ -5,18 +5,16 @@ namespace Lattice;
 
 public interface ILatticeConfiguration
 {
-    void RegisterPlugins(params ILatticePlugin[] plugins);
+    void RegisterPlugin<T>() where T : ILatticePlugin;
 }
 
 public class LatticeConfiguration : ILatticeConfiguration
 {
-    public IEnumerable<ILatticePlugin> Plugins = Enumerable.Empty<ILatticePlugin>();
+    public readonly IList<Type> Plugins = new List<Type>();
     
-    public void RegisterPlugins(
-        params ILatticePlugin[] plugins
-    )
+    public void RegisterPlugin<T>() where T : ILatticePlugin
     {
-        Plugins = plugins;
+        Plugins.Add(typeof(T));
     }
 }
 
@@ -39,7 +37,7 @@ public static class ServiceCollectionExtension
 
         foreach (var plugin in configuration.Plugins)
         {
-            serviceCollection.AddSingleton(plugin);
+            serviceCollection.AddSingleton(typeof(ILatticePlugin), plugin);
         }
 
         return serviceCollection;
