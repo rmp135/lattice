@@ -14,7 +14,7 @@ public class Node
     /// <summary>
     /// The bound context that belongs to this <see cref="Node"/>.
     /// </summary>
-    public IDictionary<string, ContextValue> Context { get; private init; } = new Dictionary<string, ContextValue>();
+    public IDictionary<string, ContextValue> Context { get; private init; } = new Dictionary<string, ContextValue>(StringComparer.InvariantCultureIgnoreCase);
 
     /// <summary>
     /// The list of attributes that belong to this <see cref="Node"/>.
