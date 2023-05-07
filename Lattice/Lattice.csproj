@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
+    <PackageReference Include="org.matheval" Version="1.0.0.3" />
     <PackageReference Include="QuestPDF" Version="2022.12.5" />
   </ItemGroup>
 

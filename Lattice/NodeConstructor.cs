@@ -21,13 +21,18 @@ public interface INodeConstructor
 public class NodeConstructor : INodeConstructor
 {
     private readonly ContextReplacer ContextReplacer;
+    private readonly ExpressionHelper ExpressionHelper;
 
     /// <summary>
     /// Expands a node tree, assigning context from a data source.
     /// </summary>
-    public NodeConstructor(ContextReplacer contextReplacer)
+    public NodeConstructor(
+        ContextReplacer contextReplacer,
+        ExpressionHelper expressionHelper
+    )
     {
         ContextReplacer = contextReplacer;
+        ExpressionHelper = expressionHelper;
     }
 
     public Task ConstructAsync(Node node) => ConstructAsync(node, new FakeSource());
@@ -36,18 +41,38 @@ public class NodeConstructor : INodeConstructor
     {
         await BindAsync(node, source);
         // Loops remove the current node and replace them with a set.
+
         var childNodes = ExpandRepeat(node).ToArray();
         if (childNodes.SequenceEqual(node.ChildNodes)) // If the child nodes are returned, no manipulation took place.
         {
             childNodes = (await ExpandForAsync(node, source)).ToArray();
         }
-
+        
+        for (var i = 0; i < node.ChildNodes.Count; i++)
+        {
+            if (!ProcessIfNode(node.ChildNodes[i]))
+            {
+                node.ChildNodes.RemoveAt(i);
+                i--;
+            }
+        }
+        
         for (var i = 0; i < childNodes.Length; i++)
         {
             var childNode = childNodes[i];
             await ConstructAsync(childNode, source);
             DissolveVirtualNodes(childNode);
         }
+    }
+
+    public bool ProcessIfNode(
+        Node node
+    )
+    {
+        var attribute = node.GetAttribute("if");
+        if (attribute is null) return true;
+        var response = ExpressionHelper.RunExpression(node, $"if({attribute}, true, false)");
+        return response == "True";
     }
 
     /// <summary>
@@ -87,8 +112,7 @@ public class NodeConstructor : INodeConstructor
         var contextValue = matches[0].Groups[2].Value;
 
         var data = await source.GetValues(ContextReplacer.ReplaceTokens(contextValue, node));
-        var dataArr = data.ToArray();
-        node.ReplaceContextKey($"{contextKey}", new GroupedContextValue(contextKey, dataArr));
+        node.ReplaceContextKey($"{contextKey}", new GroupedContextValue(contextKey, data.ToArray()));
     }
     
     /// <summary>
@@ -133,7 +157,7 @@ public class NodeConstructor : INodeConstructor
         var orderByAsc = node.GetAttribute("orderByAsc");
         var orderByDesc = node.GetAttribute("orderByDesc");
 
-        var dataArr = data;
+        var dataArr = data.ToArray();
 
         var containsKey = (IEnumerable<IDictionary<string, object>> dict, string key) =>
         {
@@ -143,14 +167,12 @@ public class NodeConstructor : INodeConstructor
         
         if (!string.IsNullOrEmpty(orderByAsc) && containsKey(dataArr, orderByAsc))
         {
-            dataArr = dataArr.OrderBy(a => a[orderByAsc]);
+            dataArr = dataArr.OrderBy(a => a[orderByAsc]).ToArray();
         }
         else if (!string.IsNullOrEmpty(orderByDesc) && containsKey(dataArr, orderByDesc))
         {
-            dataArr = dataArr.OrderByDescending(a => a[orderByDesc]);
+            dataArr = dataArr.OrderByDescending(a => a[orderByDesc]).ToArray();
         }
-
-        dataArr = dataArr.ToArray();
 
         var groupBy = node.GetAttribute("groupBy");
         if (!string.IsNullOrEmpty(groupBy) && containsKey(dataArr, groupBy))
@@ -185,14 +207,14 @@ public class NodeConstructor : INodeConstructor
         }
 
         // Not grouped.
-        for (var i = 0; i < dataArr.Count(); i++)
+        for (var i = 0; i < dataArr.Length; i++)
         {
-            var row = dataArr.ElementAt(i);
+            var row = dataArr[i];
             var newNode = node.DeepClone();
             newNode.Context.Add($"{contextKey}", new GroupedContextValue(contextKey, dataArr));
             foreach (var key in row.Keys)
             {
-                newNode.Context.Add($"{contextKey}.{key}", new StringContextValue(row[key]?.ToString() ?? ""));
+                newNode.Context.Add($"{contextKey}.{key}", new StringContextValue(row[key].ToString() ?? ""));
                 newNode.Context.Remove($"{contextKey}.index");
                 newNode.Context.Add($"{contextKey}.index", new StringContextValue(i.ToString()));
             }

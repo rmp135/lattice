@@ -1,5 +1,8 @@
 ﻿using Lattice.Nodes;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Xml.Serialization;
+using org.matheval;
 
 namespace Lattice;
 
@@ -9,6 +12,15 @@ namespace Lattice;
 [Export(typeof(ContextReplacer))]
 public class ContextReplacer
 {
+    private readonly ExpressionHelper ExpressionHelper;
+
+    public ContextReplacer(
+        ExpressionHelper expressionHelper
+    )
+    {
+        ExpressionHelper = expressionHelper;
+    }
+
     /// <summary>
     /// Replaces all tokens in a given text string, given the context of a Node.
     /// </summary>
@@ -23,7 +35,7 @@ public class ContextReplacer
         {
             if (token.IsToken)
             {
-                builder.Append(node.GetContextValue(token.Text)?.ToString() ?? token.Text);
+                builder.Append(ReplaceToken(node, token.Text));
             }
             else
             {
@@ -31,6 +43,28 @@ public class ContextReplacer
             }
         }
         return builder.ToString();
+    }
+
+    public string ReplaceToken(
+        Node node,
+        string token
+    )
+    {
+        var existingContextValue = node.GetContextValue(token)?.ToString();
+        if (existingContextValue != null)
+        {
+            return existingContextValue;
+        }
+
+        
+        try 
+        {
+            return ExpressionHelper.RunExpression(node, token);
+        }
+        catch (Exception)
+        {
+            return token;
+        }
     }
 
     /// <summary>

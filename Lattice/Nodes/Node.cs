@@ -148,6 +148,18 @@ public class Node
         return Context.TryGetValue(key, out var value) ? value : ParentNode?.GetContextValue(key);
     }
 
+    public Dictionary<string, ContextValue> GetAllContextValues()
+    {
+        var values = Context.ToDictionary(contextValue => contextValue.Key, contextValue => contextValue.Value);
+        if (ParentNode == null) return values;
+        foreach (var contextValue in ParentNode.GetAllContextValues())
+        {
+            values.TryAdd(contextValue.Key, contextValue.Value);
+        }
+
+        return values;
+    }
+
     /// <summary>
     /// Clones a <see cref="Node"/>, and all properties of that <see cref="Node"/>.
     /// </summary>

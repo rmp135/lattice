@@ -69,8 +69,8 @@ public class TextBuilder : IContainerBuilder
                     {
                         val = aggregator.Aggregate(node, val);
                     }
-                    
-                    val = node.GetContextValue(val)?.ToString() ?? val;
+
+                    val = ContextReplacer.ReplaceToken(node, token.Text);
                     textDescriptor.Span(val);
                 }
                 else
