@@ -14,6 +14,12 @@ const commonElements = [
 
 const commonAttributes = [
   {
+    "name": "if",
+    "description": "Condition to show the element.",
+    "detail": "conditional attribute",
+    "options": null
+  },
+  {
     "name": "repeat",
     "description": "Number for how many times the element should repeat. Elements are provided the `{index}` token",
     "detail": "loop attribute",
@@ -131,6 +137,18 @@ const commonAttributes = [
     "options": []
   },
   {
+    "name": "paddingVertical",
+    "description": "Point size padding to the vertical sides of the element",
+    "detail": "layout attribute",
+    "options": []
+  },
+  {
+    "name": "paddingHorizontal",
+    "description": "Point size padding to the horizontal sides of the element",
+    "detail": "layout attribute",
+    "options": []
+  },
+  {
     "name": "border",
     "description": "Decimal point width for the border",
     "detail": "style attribute",
@@ -173,8 +191,8 @@ const commonAttributes = [
     "options": []
   },
   { 
-    "name": "borderColour",
-    "description": "Colour of the border. Hex code or common HTML colour code (US spelling)",
+    "name": "borderColor",
+    "description": "Color of the border. Hex code or common HTML colour code (US spelling)",
     "detail": "style attribute",
     "options": []
   },
