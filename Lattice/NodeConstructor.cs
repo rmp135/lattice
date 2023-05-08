@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Collections;
+using System.Globalization;
+using System.Text.RegularExpressions;
 using Lattice.Nodes;
 using Lattice.Sources;
 
@@ -40,39 +42,61 @@ public class NodeConstructor : INodeConstructor
     public async Task ConstructAsync(Node node, ISource source)
     {
         await BindAsync(node, source);
-        // Loops remove the current node and replace them with a set.
 
-        var childNodes = ExpandRepeat(node).ToArray();
-        if (childNodes.SequenceEqual(node.ChildNodes)) // If the child nodes are returned, no manipulation took place.
-        {
-            childNodes = (await ExpandForAsync(node, source)).ToArray();
-        }
+        await ExpandRepeaterAsync(node, childNode => Task.FromResult(ExpandRepeat(childNode)));
+        await ExpandRepeaterAsync(node, childNode => ExpandForAsync(childNode, source));
+        
+        ProcessIfNodes(node);
         
         for (var i = 0; i < node.ChildNodes.Count; i++)
         {
-            if (!ProcessIfNode(node.ChildNodes[i]))
-            {
-                node.ChildNodes.RemoveAt(i);
-                i--;
-            }
-        }
-        
-        for (var i = 0; i < childNodes.Length; i++)
-        {
-            var childNode = childNodes[i];
+            var childNode = node.ChildNodes[i];
             await ConstructAsync(childNode, source);
             DissolveVirtualNodes(childNode);
         }
     }
 
-    public bool ProcessIfNode(
+    /// <summary>
+    /// Iterates over all children of a <see cref="Node"/>, replacing the child node with the result of the expansion function.
+    /// </summary>
+    /// <param name="node">The <see cref="Node"/> to iterate child nodes.</param>
+    /// <param name="func">The expansion function returning the nodes to be replaced with.</param>
+    public async Task ExpandRepeaterAsync(Node node, Func<Node, Task<IEnumerable<Node>>> func)
+    {
+        for (var i = 0; i < node.ChildNodes.Count; i++)
+        {
+            var currentNode = node.ChildNodes[i];
+            var expandedNodes = (await func(node.ChildNodes[i])).ToArray();
+            if (expandedNodes.Length == 1) continue;
+            node.RemoveChild(currentNode);
+            foreach (var expandedNode in expandedNodes)
+            {
+                node.AddChildAt(expandedNode, i);
+            }
+            i += expandedNodes.Length - 1;
+        }
+
+    }
+
+    /// <summary>
+    /// Processes the "if" attribute, removing the node of the expression is false.
+    /// </summary>
+    /// <param name="node">The <see cref="Node"/> to process children of.</param>
+    public void ProcessIfNodes(
         Node node
     )
     {
-        var attribute = node.GetAttribute("if");
-        if (attribute is null) return true;
-        var response = ExpressionHelper.RunExpression(node, $"if({attribute}, true, false)");
-        return response == "True";
+        for (var i = 0; i < node.ChildNodes.Count; i++)
+        {
+            var attribute = node.GetAttribute("if");
+            if (attribute is null) return;
+            var response = ExpressionHelper.RunExpression(node, $"if({attribute}, true, false)");
+            if (response == "True")
+            {
+                node.ChildNodes.RemoveAt(i);
+                i--;
+            }
+        }
     }
 
     /// <summary>
@@ -124,7 +148,7 @@ public class NodeConstructor : INodeConstructor
     public async Task<IEnumerable<Node>> ExpandForAsync(Node node, ISource source)
     {
         var repeatStr = node.GetAttribute("for");
-        if (repeatStr is null) return node.ChildNodes;
+        if (repeatStr is null) return new[] { node };
         var matches = new Regex(@"(.+) in (.+)").Matches(repeatStr);
         if (!matches.Any()) return node.ChildNodes;
         var contextKey = matches[0].Groups[1].Value;
@@ -222,7 +246,7 @@ public class NodeConstructor : INodeConstructor
             node.ParentNode!.AddChildAt(newNode, node.ParentNode!.ChildNodes.IndexOf(node));
         }
 
-        node.ParentNode.RemoveChild(node);
+        node.ParentNode.RemoveChild(node); 
         return parentNode.ChildNodes;
     }
 
@@ -235,17 +259,16 @@ public class NodeConstructor : INodeConstructor
     public IEnumerable<Node> ExpandRepeat(Node node)
     {
         var repeatStr = node.GetAttribute("repeat");
-        if (repeatStr is null || !int.TryParse(repeatStr, out var repeat)) return node.ChildNodes;
+        if (repeatStr is null || !int.TryParse(repeatStr, out var repeat)) return new[] { node };
         node.RemoveAttribute("repeat");
+        var newNodes = new List<Node>();
         for (var i = 0; i < repeat; i++)
         {
             var newNode = node.DeepClone();
             newNode.Context.Remove("index");
             newNode.Context.Add("index", new StringContextValue(i.ToString()));
-            node.ParentNode!.ChildNodes.Insert(node.ParentNode!.ChildNodes.IndexOf(node), newNode);
+            newNodes.Add(newNode);
         }
-        var pareneNode = node.ParentNode;
-        node.ParentNode.RemoveChild(node);
-        return pareneNode.ChildNodes;
+        return newNodes;
     }
 }
