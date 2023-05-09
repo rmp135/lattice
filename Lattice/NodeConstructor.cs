@@ -1,5 +1,3 @@
-﻿using System.Collections;
-using System.Globalization;
 using System.Text.RegularExpressions;
 using Lattice.Nodes;
 using Lattice.Sources;
@@ -197,7 +195,9 @@ public class NodeConstructor : INodeConstructor
         {
             dataArr = dataArr.OrderByDescending(a => a[orderByDesc]).ToArray();
         }
-
+            
+        var newNodes = new List<Node>();
+        
         var groupBy = node.GetAttribute("groupBy");
         if (!string.IsNullOrEmpty(groupBy) && containsKey(dataArr, groupBy))
         {
@@ -205,7 +205,8 @@ public class NodeConstructor : INodeConstructor
                 .GroupBy(d => d[groupBy])
                 .ToDictionary(group => group.Key, group => group)
                 .ToArray();
-        
+
+            
             for (var i = 0; i < grouped.Length; i++)
             {
                 var group = grouped[i];
@@ -223,11 +224,8 @@ public class NodeConstructor : INodeConstructor
                 newNode.ReplaceContextKey(contextKey, new GroupedContextValue(contextKey, group.Value));
                 newNode.ReplaceContextKey($"{contextKey}.index", new StringContextValue(i.ToString()));
 
-                node.ParentNode!.AddChildAt(newNode, node.ParentNode!.ChildNodes.IndexOf(node));
+                newNodes.Add(newNode);
             }
-
-            node.ParentNode.RemoveChild(node);
-            return parentNode.ChildNodes;
         }
 
         // Not grouped.
@@ -238,16 +236,15 @@ public class NodeConstructor : INodeConstructor
             newNode.Context.Add($"{contextKey}", new GroupedContextValue(contextKey, dataArr));
             foreach (var key in row.Keys)
             {
-                newNode.Context.Add($"{contextKey}.{key}", new StringContextValue(row[key].ToString() ?? ""));
+                newNode.Context.Add($"{contextKey}.{key}", new StringContextValue(row[key]?.ToString() ?? ""));
                 newNode.Context.Remove($"{contextKey}.index");
                 newNode.Context.Add($"{contextKey}.index", new StringContextValue(i.ToString()));
             }
 
-            node.ParentNode!.AddChildAt(newNode, node.ParentNode!.ChildNodes.IndexOf(node));
+            newNodes.Add(newNode);
         }
 
-        node.ParentNode.RemoveChild(node); 
-        return parentNode.ChildNodes;
+        return newNodes;
     }
 
 
