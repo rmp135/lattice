@@ -13,7 +13,6 @@ public enum NodeType
     Image,
     LineHorizontal,
     LineVertical,
-    Grid,
     Table,
     Inline,
     Virtual,

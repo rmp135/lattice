@@ -3,7 +3,6 @@ const commonElements = [
   "Column",
   "Text",
   "Table",
-  "Grid",
   "Image",
   "LineVertical",
   "LineHorizontal",
@@ -447,23 +446,6 @@ export default {
       ...commonElements
     ],
     "attributes": [
-      ...commonAttributes
-    ]
-  },
-  "Grid": {
-    "name": "Grid",
-    "detail": "basic component",
-    "description": "For aligning items in a 12 wide grid span",
-    "elements": [
-      ...commonElements
-    ],
-    "attributes": [
-      {
-        "name": "widths",
-        "description": "Relative widths of columns in 12ths. `8,4,6,6` will create two rows; the first two cells of 8 12ths and 4ths, and the second 6 12ths and 6ths.",
-        "detail": "layout attribute",
-        "options": null
-      },
       ...commonAttributes
     ]
   },
