@@ -1,0 +1,12 @@
+﻿<Document>
+  <Page margin="20" orientation="landscape">
+    <Header fontColour="gray" paddingBottom="10">
+      <Text>Periodic Table of Elements</Text>
+    </Header>
+    <Content>
+    </Content>
+    <Footer fontColour="gray">
+      <Text align="right">{currentpage} / {totalpages}</Text>
+    </Footer>
+  </Page>
+</Document>
