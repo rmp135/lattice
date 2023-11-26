@@ -1,4 +1,5 @@
-﻿using Lattice.AttributeMutators;
+﻿using AutoCtor;
+using Lattice.AttributeMutators;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using Lattice.Nodes;
@@ -6,14 +7,11 @@ using Lattice.Nodes;
 namespace Lattice.Builders;
 
 [Export(typeof(IContainerBuilder))]
-public class ImageBuilder : IContainerBuilder
+[AutoConstruct]
+public partial class ImageBuilder : IContainerBuilder
 {
     private readonly ContainerMutator ContainerMutator;
     public NodeType Type => NodeType.Image;
-    public ImageBuilder(ContainerMutator containerMutator)
-    {
-        ContainerMutator = containerMutator;
-    }
 
     public void Build(Node node, IContainer container)
     {

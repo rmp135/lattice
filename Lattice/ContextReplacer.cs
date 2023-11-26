@@ -1,8 +1,6 @@
 ﻿using Lattice.Nodes;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Xml.Serialization;
-using org.matheval;
+using AutoCtor;
 
 namespace Lattice;
 
@@ -10,16 +8,10 @@ namespace Lattice;
 /// Methods concerning replacing the tokens from context.
 /// </summary>
 [Export(typeof(ContextReplacer))]
-public class ContextReplacer
+[AutoConstruct]
+public partial class ContextReplacer
 {
     private readonly ExpressionHelper ExpressionHelper;
-
-    public ContextReplacer(
-        ExpressionHelper expressionHelper
-    )
-    {
-        ExpressionHelper = expressionHelper;
-    }
 
     /// <summary>
     /// Replaces all tokens in a given text string, given the context of a Node.

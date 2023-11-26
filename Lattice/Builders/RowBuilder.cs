@@ -1,4 +1,5 @@
-﻿using QuestPDF.Fluent;
+﻿using AutoCtor;
+using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using Lattice.AttributeMutators;
 using Lattice.Nodes;
@@ -6,17 +7,12 @@ using Lattice.Nodes;
 namespace Lattice.Builders;
 
 [Export(typeof(IContainerBuilder))]
-public class RowBuilder : IContainerBuilder
+[AutoConstruct]
+public partial class RowBuilder : IContainerBuilder
 {
     private readonly ContainerBuilder ContainerBuilder;
     private readonly ContainerMutator ContainerMutator;
     public NodeType Type => NodeType.Row;
-
-    public RowBuilder(ContainerBuilder containerBuilder, ContainerMutator containerMutator)
-    {
-        ContainerBuilder = containerBuilder;
-        ContainerMutator = containerMutator;
-    }
 
     public void Build(Node node, IContainer container)
     {

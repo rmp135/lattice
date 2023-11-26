@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.Text.RegularExpressions;
+using AutoCtor;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using Lattice.AttributeMutators;
@@ -8,26 +9,15 @@ using Lattice.Nodes;
 namespace Lattice.Builders;
 
 [Export(typeof(IContainerBuilder))]
-public class TextBuilder : IContainerBuilder
+[AutoConstruct]
+public partial class TextBuilder : IContainerBuilder
 {
     private readonly TextStyleMutator StyleMutator;
     private readonly ContextReplacer ContextReplacer;
     private readonly ContainerMutator ContainerMutator;
     private readonly IEnumerable<IAggregator> Aggregators;
-    public NodeType Type => NodeType.Text;
 
-    public TextBuilder(
-        TextStyleMutator styleMutator,
-        ContextReplacer contextReplacer,
-        ContainerMutator containerMutator,
-        IEnumerable<IAggregator> aggregators
-    )
-    {
-        StyleMutator = styleMutator;
-        ContextReplacer = contextReplacer;
-        ContainerMutator = containerMutator;
-        Aggregators = aggregators;
-    }
+    public NodeType Type => NodeType.Text;
 
     public void Build(Node node, IContainer container)
     {

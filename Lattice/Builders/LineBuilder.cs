@@ -2,23 +2,18 @@
 using QuestPDF.Infrastructure;
 using Lattice.AttributeMutators;
 using Lattice.Nodes;
-using System.Drawing;
+using AutoCtor;
 
 namespace Lattice.Builders;
 
 [Export(typeof(IContainerBuilder))]
-public class LineHorizontalBuilder : IContainerBuilder
+[AutoConstruct]
+public partial class LineHorizontalBuilder : IContainerBuilder
 {
     public NodeType Type => NodeType.LineHorizontal;
 
     private readonly ColourConverter ColourConverter;
     private readonly ContainerMutator ContainerMutator;
-    
-    public LineHorizontalBuilder(ColourConverter colourConverter, ContainerMutator containerMutator)
-    {
-        ColourConverter = colourConverter;
-        ContainerMutator = containerMutator;
-    }
 
     public void Build(Node node, IContainer container)
     {

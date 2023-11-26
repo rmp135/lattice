@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using AutoCtor;
 using Lattice.Nodes;
 using Lattice.Sources;
 
@@ -17,23 +18,15 @@ public interface INodeConstructor
     Task ConstructAsync(Node node, ISource source);
 }
 
+/// <summary>
+/// Expands a node tree, assigning context from a data source.
+/// </summary>
 [Export(typeof(INodeConstructor))]
-public class NodeConstructor : INodeConstructor
+[AutoConstruct]
+public partial class NodeConstructor : INodeConstructor
 {
     private readonly ContextReplacer ContextReplacer;
     private readonly ExpressionHelper ExpressionHelper;
-
-    /// <summary>
-    /// Expands a node tree, assigning context from a data source.
-    /// </summary>
-    public NodeConstructor(
-        ContextReplacer contextReplacer,
-        ExpressionHelper expressionHelper
-    )
-    {
-        ContextReplacer = contextReplacer;
-        ExpressionHelper = expressionHelper;
-    }
 
     public Task ConstructAsync(Node node) => ConstructAsync(node, new FakeSource());
 

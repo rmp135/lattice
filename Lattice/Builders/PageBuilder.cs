@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+﻿using AutoCtor;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using Lattice.AttributeMutators;
@@ -9,22 +9,12 @@ using SkiaSharp;
 namespace Lattice.Builders;
 
 [Export(typeof(PageBuilder))]
-public class PageBuilder
+[AutoConstruct]
+public partial class PageBuilder
 {
     private readonly IEnumerable<IPagePartBuilder> PageBuilders;
     private readonly TextStyleMutator TextStyleMutator;
     private readonly ColourConverter ColourConverter; 
-
-    public PageBuilder(
-        IEnumerable<IPagePartBuilder> pageBuilders,
-        TextStyleMutator textStyleMutator, 
-        ColourConverter colourConverter
-        )
-    {
-        PageBuilders = pageBuilders;
-        TextStyleMutator = textStyleMutator;
-        ColourConverter = colourConverter;
-    }
 
     public void Build(Node node, IDocumentContainer documentContainer)
     {
