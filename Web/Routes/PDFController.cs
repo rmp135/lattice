@@ -16,15 +16,15 @@ public class PDFController : Controller
 {
     private readonly INodeConstructor NodeConstructor;
     private readonly IDocumentBuilder DocumentBuilder;
-    private readonly TempStorage TempStorage;
+    private readonly PreviewStorage _previewStorage;
 
     private readonly ISource _source = new CSVSource("Data/Sources/Elements.csv");
     
-    public PDFController(INodeConstructor nodeConstructor, IDocumentBuilder documentBuilder, TempStorage tempStorage)
+    public PDFController(INodeConstructor nodeConstructor, IDocumentBuilder documentBuilder, PreviewStorage previewStorage)
     {
         NodeConstructor = nodeConstructor;
         DocumentBuilder = documentBuilder;
-        TempStorage = tempStorage;
+        _previewStorage = previewStorage;
     }
 
     private Node NodeFromXML(XElement xmlNode)
@@ -65,14 +65,14 @@ public class PDFController : Controller
             });
         }
 
-        var id =  TempStorage.AddToStore(xml);
+        var id =  _previewStorage.AddToStore(xml);
         return new OkObjectResult(id);
     }
     
     [HttpGet("")]
     public async Task<IActionResult> Index([FromQuery] string id)
     {
-        var xmlAsString = TempStorage.Get(id);
+        var xmlAsString = _previewStorage.Get(id);
         if (xmlAsString is null) return new NotFoundResult();
         var document = XDocument.Parse(xmlAsString);
 

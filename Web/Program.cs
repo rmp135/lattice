@@ -8,7 +8,7 @@ using Lattice.Web.Data;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddLattice();
-builder.Services.AddSingleton<TempStorage>();
+builder.Services.AddSingleton<PreviewStorage>();
 builder.Services.AddControllers();
 
 var app = builder.Build();
