@@ -1,11 +1,11 @@
 using System.Diagnostics;
 using Lattice;
-using System.Reflection;
-using Lattice.Builders;
-using Lattice.Web;
 using Lattice.Web.Data;
+using QuestPDF.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
+
+QuestPDF.Settings.License = LicenseType.Community;
 
 builder.Services.AddLattice();
 builder.Services.AddSingleton<PreviewStorage>();
