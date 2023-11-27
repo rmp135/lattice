@@ -17,15 +17,52 @@ public partial class ImageBuilder : IContainerBuilder
     {
         var newContainer = ContainerMutator.Mutate(container, node);
         var source = node.GetAttribute("src");
-        if (source is null) return;
-        
+        if (!File.Exists(source)) return;
+        var image = newContainer.Image(source);
+        ScaleImage(node, image);
+    }
+    
+    public void ScaleImage(Node node, ImageDescriptor image)
+    {
         var scaling = node.GetAttribute("scaling");
-        var imageScaling = scaling switch
+        switch (scaling)
         {
-            "area" => ImageScaling.FitArea,
-            "height" => ImageScaling.FitHeight,
-            _ => ImageScaling.FitWidth
-        };
-        newContainer.Image(source, imageScaling);
+            case "area":
+                image.FitArea();
+                break;
+            case "height":
+                image.FitHeight();
+                break;
+            case "unproportionate":
+            case "freeform":
+                image.FitUnproportionally();
+                break;
+            default:
+                AutoScale(node, image);
+                break;
+        }
+    }
+    /// <summary>
+    /// Automatically scales the image based on the dimension attributes of the node.
+    /// </summary>
+    /// <param name="node">The node to read attributes from.</param>
+    /// <param name="imageDescriptor">The image to apply scaling to..</param>
+    public void AutoScale(Node node, ImageDescriptor imageDescriptor)
+    {
+        var hasWidth = node.GetAttribute("width") != null;
+        var hasHeight = node.GetAttribute("height") != null;
+
+        if (hasWidth && hasHeight)
+        {
+            imageDescriptor.FitUnproportionally();
+        }
+        else if (hasWidth)
+        {
+            imageDescriptor.FitWidth();
+        }
+        else if (hasHeight)
+        {
+            imageDescriptor.FitHeight();
+        }
     }
 }
