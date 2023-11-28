@@ -37,7 +37,7 @@ public partial class NodeConstructor : INodeConstructor
         await ExpandRepeaterAsync(node, childNode => Task.FromResult(ExpandRepeat(childNode)));
         await ExpandRepeaterAsync(node, childNode => ExpandForAsync(childNode, source));
         
-        ProcessIfNodes(node);
+        ProcessConditionals(node);
         
         for (var i = 0; i < node.ChildNodes.Count; i++)
         {
@@ -58,31 +58,44 @@ public partial class NodeConstructor : INodeConstructor
         {
             var currentNode = node.ChildNodes[i];
             var expandedNodes = (await func(node.ChildNodes[i])).ToArray();
-            if (expandedNodes.Length == 1) continue;
             node.RemoveChild(currentNode);
-            foreach (var expandedNode in expandedNodes)
+            for (var offset = 0; offset < expandedNodes.Length; offset++)
             {
-                node.AddChildAt(expandedNode, i);
+                var expandedNode = expandedNodes[offset];
+                node.AddChildAt(expandedNode, i + offset);
             }
             i += expandedNodes.Length - 1;
         }
-
     }
 
     /// <summary>
-    /// Processes the "if" attribute, removing the node of the expression is false.
+    /// Processes the "if" and "else" attributes..
     /// </summary>
     /// <param name="node">The <see cref="Node"/> to process children of.</param>
-    public void ProcessIfNodes(
+    public void ProcessConditionals(
         Node node
     )
     {
+        bool? previousIfResult = null;
         for (var i = 0; i < node.ChildNodes.Count; i++)
         {
-            var attribute = node.GetAttribute("if");
-            if (attribute is null) return;
-            var response = ExpressionHelper.RunExpression(node, $"if({attribute}, true, false)");
-            if (response == "True")
+            var childNode = node.ChildNodes[i];
+            var ifAttribute = childNode.GetAttribute("if");
+            if (ifAttribute is null)
+            {
+                var elseAttribute = childNode.GetAttribute("else");
+                if (elseAttribute is not null && previousIfResult.HasValue && previousIfResult.Value) 
+                {
+                    node.ChildNodes.RemoveAt(i);
+                    i--;
+                }
+                previousIfResult = null;
+                continue;
+            }
+            var response = ContextReplacer.ReplaceToken(childNode, $"if({ifAttribute}, true, false)");
+            var result = response.Equals("True", StringComparison.OrdinalIgnoreCase);
+            previousIfResult = result;
+            if (!result)
             {
                 node.ChildNodes.RemoveAt(i);
                 i--;
@@ -96,19 +109,34 @@ public partial class NodeConstructor : INodeConstructor
     /// <param name="node">The node that contains the virtual nodes.</param>
     public void DissolveVirtualNodes(Node node)
     {
-        var childNodes = node.ChildNodes.Where(a => a.Type == NodeType.Virtual).ToArray();
-        foreach (var childNode in childNodes)
+        var newnodes = new List<Node>();
+        for (var i = node.ChildNodes.Count - 1; i >= 0; i--)
         {
-            foreach (var grandchildNode in childNode.ChildNodes)
+            var childNode = node.ChildNodes[i];
+            if (childNode.Type != NodeType.Virtual)
+            {
+                newnodes.Add(childNode);
+                node.RemoveChild(childNode);
+                continue;
+            }
+
+            foreach (var grandchildNode in childNode.ChildNodes.Reverse())
             {
                 foreach (var k in childNode.Context)
                 {
                     grandchildNode.ReplaceContextKey(k.Key, k.Value);
                 }
 
-                node.AddChild(grandchildNode);
-                node.RemoveChild(childNode);
+                newnodes.Add(grandchildNode);
             }
+
+            node.RemoveChild(childNode);
+        }
+
+        newnodes.Reverse();
+        foreach (var newnode in newnodes)
+        {
+            node.AddChild(newnode);
         }
     }
     
@@ -230,8 +258,8 @@ public partial class NodeConstructor : INodeConstructor
             foreach (var key in row.Keys)
             {
                 newNode.Context.Add($"{contextKey}.{key}", new StringContextValue(row[key]?.ToString() ?? ""));
-                newNode.Context.Remove($"{contextKey}.index");
-                newNode.Context.Add($"{contextKey}.index", new StringContextValue(i.ToString()));
+                newNode.Context.Remove($"{contextKey}.$index");
+                newNode.Context.Add($"{contextKey}.$index", new StringContextValue(i.ToString()));
             }
 
             newNodes.Add(newNode);
@@ -255,8 +283,8 @@ public partial class NodeConstructor : INodeConstructor
         for (var i = 0; i < repeat; i++)
         {
             var newNode = node.DeepClone();
-            newNode.Context.Remove("index");
-            newNode.Context.Add("index", new StringContextValue(i.ToString()));
+            newNode.Context.Remove("$index");
+            newNode.Context.Add("$index", new StringContextValue(i.ToString()));
             newNodes.Add(newNode);
         }
         return newNodes;
