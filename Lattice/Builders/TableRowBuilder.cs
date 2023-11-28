@@ -1,12 +1,11 @@
-﻿using AutoCtor;
-using QuestPDF.Infrastructure;
+﻿using QuestPDF.Infrastructure;
 using Lattice.AttributeMutators;
 using Lattice.Nodes;
 
 namespace Lattice.Builders;
 
 [Export(typeof(IContainerBuilder))]
-[AutoConstruct]
+[AutoConstructor]
 public partial class TableRowBuilder : IContainerBuilder
 {
     private readonly ContainerBuilder ContainerBuilder;

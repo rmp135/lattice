@@ -1,5 +1,4 @@
 using System.Text.RegularExpressions;
-using AutoCtor;
 using Lattice.Nodes;
 using Lattice.Sources;
 
@@ -22,7 +21,7 @@ public interface INodeConstructor
 /// Expands a node tree, assigning context from a data source.
 /// </summary>
 [Export(typeof(INodeConstructor))]
-[AutoConstruct]
+[AutoConstructor]
 public partial class NodeConstructor : INodeConstructor
 {
     private readonly ContextReplacer ContextReplacer;

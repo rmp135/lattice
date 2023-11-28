@@ -1,5 +1,4 @@
 ﻿using System.Text.RegularExpressions;
-using AutoCtor;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using Lattice.AttributeMutators;
@@ -9,7 +8,7 @@ using QuestPDF.Elements.Table;
 namespace Lattice.Builders;
 
 [Export(typeof(IContainerBuilder))]
-[AutoConstruct]
+[AutoConstructor]
 public partial class TableBuilder : IContainerBuilder
 {
     private readonly ContainerBuilder ContainerBuilder;

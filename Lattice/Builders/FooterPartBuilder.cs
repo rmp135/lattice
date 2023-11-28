@@ -1,12 +1,11 @@
-﻿using AutoCtor;
-using QuestPDF.Fluent;
+﻿using QuestPDF.Fluent;
 using Lattice.AttributeMutators;
 using Lattice.Nodes;
 
 namespace Lattice.Builders;
 
 [Export(typeof(IPagePartBuilder))]
-[AutoConstruct]
+[AutoConstructor]
 public partial class FooterPartBuilder : IPagePartBuilder
 {
     private readonly ContainerBuilder ContainerBuilder;

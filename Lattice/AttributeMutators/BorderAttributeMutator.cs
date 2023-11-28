@@ -1,6 +1,5 @@
 ﻿using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
-using System.Drawing;
 
 namespace Lattice.AttributeMutators;
 

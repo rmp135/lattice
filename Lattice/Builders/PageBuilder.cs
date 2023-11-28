@@ -1,15 +1,13 @@
-﻿using AutoCtor;
-using QuestPDF.Fluent;
+﻿using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using Lattice.AttributeMutators;
 using Lattice.Nodes;
 using QuestPDF.Helpers;
-using SkiaSharp;
 
 namespace Lattice.Builders;
 
 [Export(typeof(PageBuilder))]
-[AutoConstruct]
+[AutoConstructor]
 public partial class PageBuilder
 {
     private readonly IEnumerable<IPagePartBuilder> PageBuilders;

@@ -1,5 +1,4 @@
-﻿using AutoCtor;
-using QuestPDF.Fluent;
+﻿using QuestPDF.Fluent;
 using Lattice.Nodes;
 
 namespace Lattice.Builders;
@@ -15,7 +14,7 @@ public interface IDocumentBuilder
 }
 
 [Export(typeof(IDocumentBuilder))]
-[AutoConstruct]
+[AutoConstructor]
 internal partial class DocumentBuilder : IDocumentBuilder
 {
     private readonly PageBuilder PageBuilder;

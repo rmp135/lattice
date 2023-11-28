@@ -1,6 +1,5 @@
 ﻿using Lattice.Nodes;
 using System.Text;
-using AutoCtor;
 
 namespace Lattice;
 
@@ -8,7 +7,7 @@ namespace Lattice;
 /// Methods concerning replacing the tokens from context.
 /// </summary>
 [Export(typeof(ContextReplacer))]
-[AutoConstruct]
+[AutoConstructor]
 public partial class ContextReplacer
 {
     private readonly ExpressionHelper ExpressionHelper;

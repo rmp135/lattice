@@ -1,9 +1,7 @@
-﻿using AutoCtor;
-
-namespace Lattice.Builders;
+﻿namespace Lattice.Builders;
 
 [Export(typeof(IContainerBuilder))]
-[AutoConstruct]
+[AutoConstructor]
 public partial class TableFooterBuilder : TableRowBuilder
 {
     public override NodeType Type => NodeType.TableFooter;

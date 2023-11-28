@@ -2,12 +2,11 @@
 using QuestPDF.Infrastructure;
 using Lattice.AttributeMutators;
 using Lattice.Nodes;
-using AutoCtor;
 
 namespace Lattice.Builders;
 
 [Export(typeof(IContainerBuilder))]
-[AutoConstruct]
+[AutoConstructor]
 public partial class LineHorizontalBuilder : IContainerBuilder
 {
     public NodeType Type => NodeType.LineHorizontal;
