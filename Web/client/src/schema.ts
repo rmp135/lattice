@@ -8,7 +8,8 @@ const commonElements = [
   "LineHorizontal",
   "Inline",
   "Virtual",
-  "PageBreak"
+  "PageBreak",
+  "Template"
 ]
 
 const commonAttributes = [
@@ -474,6 +475,24 @@ export default {
         "name": "widths",
         "description": "Relative widths of columns in 12ths. `8,4,3,9` will create two rows; the first two cells of 8 12ths and 4ths, and the second 3 12ths and 9 12ths.",
         "detail": "layout attribute",
+        "options": null
+      },
+      ...commonAttributes
+    ]
+  },
+  "Template": {
+    "name": "Template",
+    "detail": "basic component",
+    "description": "A template that can be referenced by other components",
+    "autoClose": true,
+    "elements": [
+      ...commonElements
+    ],
+    "attributes": [
+      {
+        "name": "name",
+        "description": "Name of the template",
+        "detail": "template attribute",
         "options": null
       },
       ...commonAttributes

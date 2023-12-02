@@ -1,11 +1,26 @@
 <style scoped lang="scss">
   .main {
     height: 100%;
+    select {
+      outline: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='grey'><polygon points='0,0 16,0 8,16'/></svg>") no-repeat right 0.7em top 50%, 0 0;
+      background-size: 0.65em auto, 100%;
+      border: 1px solid #ccc;
+      padding: 0.5em;
+      width: 100%;
+      font-size: 1em;
+      border-radius: 0.25em;
+      margin-bottom: 10px;
+      // increase spacing of option
+      option {
+        padding: 10px;
+      }
+    }
   }
   .container {
-    select {
-      height: 1rem;
-    }
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     grid-column-gap: 10px;
