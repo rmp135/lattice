@@ -1,0 +1,46 @@
+﻿<Document>
+  <Page margin="20">
+    <Content>
+      <Column spacing="5">
+        <Text align="center" fontSize="20" fontEmphasis="20">Lattice</Text>
+        <Column>
+          <Text fontEmphasis="bold" fontSize="14">Text</Text>
+          <Inline>
+            <Text>Text can be placed anywhere on a page. </Text>
+            <Text fontEmphasis="bold">Styling </Text>
+            <Text fontEmphasis="underline">can </Text>
+            <Text fontEmphasis="italic">be </Text>
+            <Text fontEmphasis="superscript">applied </Text>
+            <Text fontEmphasis="subscript"> if supported </Text>
+            <Text>by the font.</Text>
+          </Inline>
+          <Inline>
+            <Text fontColour="red">Colours </Text>
+            <Text fontColour="blue">can be </Text>
+            <Text fontColour="green">applied by HTML name </Text>
+            <Text fontColour="#ff9923">or hex code. </Text>
+          </Inline>
+        </Column>
+        <Column>
+          <Text>Text is aligned left by default.</Text>
+          <Text align="center">But can also be aligned center.</Text>
+          <Text align="right">Or aligned to the right</Text>
+        </Column>
+        <Text letterSpacing="0.5">Letter spacing can be specified.</Text>
+        <Text fontEmphasis="bold" fontSize="14">Basic Positioning</Text>
+        <Column>
+          <Text>Columns and Rows are used to arrange items either vertically or horizontally.</Text>
+          <Text>This section is written as Text elements in a Column.</Text>
+        </Column>
+        <Row>
+          <Text>A row is used to arrange items left to right </Text>
+          <Text>By default, each "column" of a row is equally spaced. </Text>
+          <Column>
+            <Text>Columns and Rows can be nested.</Text>
+            <Text>This allows for a vertical text inside here.</Text>
+          </Column>
+        </Row>
+      </Column>
+    </Content>
+  </Page>
+</Document>

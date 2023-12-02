@@ -1,6 +1,9 @@
 ﻿<Document>
-  <Page>
+  <Page margin="20">
     <Content>
+      <Column>
+        <Text>Hello World!</Text>
+      </Column>
     </Content>
   </Page>
 </Document>
