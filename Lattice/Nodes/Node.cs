@@ -78,6 +78,13 @@ public class Node
         return this;
     }
     
+    public Node ReplaceAttribute(string key, string value)
+    {
+        RemoveAttribute(key);
+        AddAttribute(key, value);
+        return this;
+    }
+    
     /// <summary>
     /// Replaces an <see cref="Context"/> item by removing it by key and adding a new one.
     /// </summary>
@@ -164,7 +171,7 @@ public class Node
     /// Clones a <see cref="Node"/>, and all properties of that <see cref="Node"/>.
     /// </summary>
     /// <returns>The cloned <see cref="Node"/>.</returns>
-    public Node DeepClone()
+    public virtual Node DeepClone()
     {
         var node = new Node(Tag)
         {

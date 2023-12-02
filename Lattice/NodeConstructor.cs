@@ -25,12 +25,12 @@ public interface INodeConstructor
 public partial class NodeConstructor : INodeConstructor
 {
     private readonly ContextReplacer ContextReplacer;
-    private readonly ExpressionHelper ExpressionHelper;
 
     public Task ConstructAsync(Node node) => ConstructAsync(node, new FakeSource());
 
     public async Task ConstructAsync(Node node, ISource source)
     {
+        ApplyTemplates(node);
         await BindAsync(node, source);
 
         await ExpandRepeaterAsync(node, childNode => Task.FromResult(ExpandRepeat(childNode)));
@@ -38,14 +38,60 @@ public partial class NodeConstructor : INodeConstructor
         
         ProcessConditionals(node);
         
+        // ReSharper disable once ForCanBeConvertedToForeach
+        // Loop may remove items from the list prevent foreach from working.
         for (var i = 0; i < node.ChildNodes.Count; i++)
         {
             var childNode = node.ChildNodes[i];
             await ConstructAsync(childNode, source);
             DissolveVirtualNodes(childNode);
         }
+        RemoveTemplates(node);
     }
 
+    /// <summary>
+    /// Recursively removes all <see cref="NodeType.Template"/> nodes from a <see cref="Node"/>.
+    /// </summary>
+    /// <para ></para>
+    public void RemoveTemplates(Node node)
+    {
+        for (var i = 0; i < node.ChildNodes.Count; i++)
+        {
+            var childNode = node.ChildNodes[i];
+            if (childNode.Type == NodeType.Template)
+            {
+                node.RemoveChild(childNode);
+            }
+            else
+            {
+                RemoveTemplates(childNode);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Applies all applicable templates to a node, replacing the attributes.
+    /// </summary>
+    /// <param name="node">The node to apply templates to.</param>
+    public void ApplyTemplates(
+        Node node
+    )
+    {
+        var templateNames = node.GetAttribute("template")?.Split(" ") ?? Array.Empty<string>();
+        if (!templateNames.Any()) return;
+        var templateNodes = node.GetApplicableTemplateNodes();
+        foreach (var templateName in templateNames)
+        {
+            var foundTemplate = templateNodes.FirstOrDefault(t => t.GetAttribute("name") == templateName);
+            if (foundTemplate is null) continue;
+            foreach (var attribute in foundTemplate.Attributes)
+            {
+                // Don't overwrite the name attribute.
+                if (attribute.Key.Equals("name")) continue;
+                node.ReplaceAttribute(attribute.Key, attribute.Value);
+            }
+        }
+    }
     /// <summary>
     /// Iterates over all children of a <see cref="Node"/>, replacing the child node with the result of the expansion function.
     /// </summary>
@@ -226,7 +272,6 @@ public partial class NodeConstructor : INodeConstructor
                 .ToDictionary(group => group.Key, group => group)
                 .ToArray();
 
-            
             for (var i = 0; i < grouped.Length; i++)
             {
                 var group = grouped[i];
@@ -256,7 +301,7 @@ public partial class NodeConstructor : INodeConstructor
             newNode.Context.Add($"{contextKey}", new GroupedContextValue(contextKey, dataArr));
             foreach (var key in row.Keys)
             {
-                newNode.Context.Add($"{contextKey}.{key}", new StringContextValue(row[key]?.ToString() ?? ""));
+                newNode.Context.Add($"{contextKey}.{key}", new StringContextValue(row[key].ToString() ?? ""));
                 newNode.Context.Remove($"{contextKey}.$index");
                 newNode.Context.Add($"{contextKey}.$index", new StringContextValue(i.ToString()));
             }

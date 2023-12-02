@@ -20,5 +20,6 @@ public enum NodeType
     TableFooter,
     TableHeader,
     PageBreak,
-    Plugin
+    Plugin,
+    Template
 }
