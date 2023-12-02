@@ -2,12 +2,11 @@
 using QuestPDF.Fluent;
 using Lattice.Builders;
 using System.Text;
-using System.Xml;
-using System.Xml.Linq;
 using Lattice.Sources;
 using Lattice.Web.Data;
 using Lattice.Web.Data.Sources;
 using Node = Lattice.Nodes.Node;
+using HtmlAgilityPack;
 
 namespace Lattice.Web.Routes;
 
@@ -27,19 +26,19 @@ public class PDFController : Controller
         _previewStorage = previewStorage;
     }
 
-    private Node NodeFromXML(XElement xmlNode)
+    private Node NodeFromXML(HtmlNode xmlNode)
     {
-        var node = new Node(xmlNode.Name.LocalName);
-        if (!string.IsNullOrEmpty(xmlNode.Value))
+        var node = new Node(xmlNode.Name);
+        if (!string.IsNullOrEmpty(xmlNode.InnerText))
         {
-            node.AddAttribute("text", xmlNode.Value);
+            node.AddAttribute("text", xmlNode.InnerText);
         }
-        foreach (var attribute in xmlNode.Attributes())
+        foreach (var attribute in xmlNode.Attributes)
         {
-            node.AddAttribute(attribute.Name.LocalName, attribute.Value);
+            node.AddAttribute(attribute.Name, attribute.Value);
         }
 
-        foreach (var childNode in xmlNode.Elements())
+        foreach (var childNode in xmlNode.ChildNodes.Where(x => x.NodeType == HtmlNodeType.Element))
         {
             node.AddChild(NodeFromXML(childNode));
         }
@@ -50,22 +49,23 @@ public class PDFController : Controller
     public async Task<IActionResult> IndexPost()
     {
         using var body = new StreamReader(Request.Body, Encoding.UTF8);
-        var xml = await body.ReadToEndAsync();
-        try
+        var bodyString = await body.ReadToEndAsync();
+        var doc = new HtmlDocument();
+        doc.LoadHtml(bodyString);
+        if (doc.ParseErrors.Any())
         {
-            _ = XDocument.Parse(xml);
-        }
-        catch (XmlException xmlException)
-        {
-            return new BadRequestObjectResult(new
-            {
-                ColumnNumber = xmlException.LinePosition,
-                xmlException.LineNumber,
-                xmlException.Message
-            });
+            var xmlException = doc.ParseErrors.First();
+            return new BadRequestObjectResult(
+                new
+                {
+                    ColumnNumber = xmlException.LinePosition,
+                    LineNumber = xmlException.Line,
+                    Message = xmlException.Reason
+                }
+            );
         }
 
-        var id =  _previewStorage.AddToStore(xml);
+        var id =  _previewStorage.AddToStore(bodyString);
         return new OkObjectResult(id);
     }
     
@@ -74,9 +74,9 @@ public class PDFController : Controller
     {
         var xmlAsString = _previewStorage.Get(id);
         if (xmlAsString is null) return new NotFoundResult();
-        var document = XDocument.Parse(xmlAsString);
-
-        var rootNode = NodeFromXML(document.Root);
+        var doc = new HtmlDocument();
+        doc.LoadHtml(xmlAsString);
+        var rootNode = NodeFromXML(doc.DocumentNode.FirstChild);
         await NodeConstructor.ConstructAsync(rootNode, _source);
         var stream = new MemoryStream();
         DocumentBuilder.Build(rootNode).GeneratePdf(stream);
