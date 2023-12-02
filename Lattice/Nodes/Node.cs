@@ -105,7 +105,7 @@ public class Node
     /// </summary>
     /// <param name="key">The key of the attribute to find.</param>
     /// <returns>The last found attribute of that key.</returns>
-    public string? GetAttribute(string key)
+    public virtual string? GetAttribute(string key)
     {
         return Attributes
             .LastOrDefault(c => c.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase))
@@ -177,6 +177,15 @@ public class Node
             node.AddChild(childNode);
         }
         return node;
+    }
+
+    public virtual IEnumerable<Node> GetApplicableTemplateNodes()
+    {
+        return ParentNode == null 
+            ? Enumerable.Empty<Node>()
+            : ParentNode.ChildNodes
+                .Where(c => c.Type == NodeType.Template)
+                .Concat(ParentNode.GetApplicableTemplateNodes());
     }
 }
 

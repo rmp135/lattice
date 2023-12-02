@@ -36,7 +36,7 @@ public partial class ContextReplacer
         return builder.ToString();
     }
 
-    public string ReplaceToken(
+    public virtual string ReplaceToken(
         Node node,
         string token
     )
