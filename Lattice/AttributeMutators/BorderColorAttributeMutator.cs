@@ -5,23 +5,15 @@ using Lattice.Nodes;
 namespace Lattice.AttributeMutators;
 
 
-[Export(typeof(IAttributeMutator))]
-public class BorderColorAttributeMutator : IAttributeMutator
+[Export<IAttributeMutator>]
+public class BorderColorAttributeMutator(
+    ColourConverter ColourColourConverter,
+    ContextReplacer ContextReplacer
+)
+    : IAttributeMutator
 {
 
     public string Name => "borderColor";
-    
-    private readonly ColourConverter ColourColourConverter;
-    private readonly ContextReplacer ContextReplacer;
-    
-    public BorderColorAttributeMutator(
-        ColourConverter colourColourConverter,
-        ContextReplacer contextReplacer
-    )
-    {
-        ColourColourConverter = colourColourConverter;
-        ContextReplacer = contextReplacer;
-    }
 
     public IContainer Mutate(IContainer container, Node node)
     {

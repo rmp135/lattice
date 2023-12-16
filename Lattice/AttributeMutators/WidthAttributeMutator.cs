@@ -3,7 +3,7 @@ using QuestPDF.Infrastructure;
 
 namespace Lattice.AttributeMutators;
 
-[Export(typeof(IAttributeMutator))]
+[Export<IAttributeMutator>]
 public class WidthAttributeMutator : BaseAttributeMutator
 {
     public override string Name => "width";

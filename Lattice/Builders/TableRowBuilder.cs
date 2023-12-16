@@ -4,13 +4,13 @@ using Lattice.Nodes;
 
 namespace Lattice.Builders;
 
-[Export(typeof(IContainerBuilder))]
-[AutoConstructor]
-public partial class TableRowBuilder : IContainerBuilder
+[Export<IContainerBuilder>]
+public class TableRowBuilder(
+    ContainerBuilder ContainerBuilder,
+    ContainerMutator ContainerMutator
+)
+    : IContainerBuilder
 {
-    private readonly ContainerBuilder ContainerBuilder;
-    private readonly ContainerMutator ContainerMutator;
-
     public virtual NodeType Type => NodeType.TableRow;
 
     public void Build(Node node, IContainer container)

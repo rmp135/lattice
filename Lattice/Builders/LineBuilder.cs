@@ -5,14 +5,14 @@ using Lattice.Nodes;
 
 namespace Lattice.Builders;
 
-[Export(typeof(IContainerBuilder))]
-[AutoConstructor]
-public partial class LineHorizontalBuilder : IContainerBuilder
+[Export<IContainerBuilder>]
+public class LineHorizontalBuilder(
+    ColourConverter ColourConverter,
+    ContainerMutator ContainerMutator
+)
+    : IContainerBuilder
 {
     public NodeType Type => NodeType.LineHorizontal;
-
-    private readonly ColourConverter ColourConverter;
-    private readonly ContainerMutator ContainerMutator;
 
     public void Build(Node node, IContainer container)
     {
@@ -28,7 +28,7 @@ public partial class LineHorizontalBuilder : IContainerBuilder
     }
 }
 
-[Export(typeof(IContainerBuilder))]
+[Export<IContainerBuilder>]
 public class LineVerticalBuilder : IContainerBuilder
 {
     public NodeType Type => NodeType.LineVertical;

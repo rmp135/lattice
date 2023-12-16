@@ -5,11 +5,9 @@ using Lattice.Nodes;
 
 namespace Lattice.Builders;
 
-[Export(typeof(IContainerBuilder))]
-[AutoConstructor]
-public partial class ImageBuilder : IContainerBuilder
+[Export<IContainerBuilder>]
+public class ImageBuilder(ContainerMutator ContainerMutator) : IContainerBuilder
 {
-    private readonly ContainerMutator ContainerMutator;
     public NodeType Type => NodeType.Image;
 
     public void Build(Node node, IContainer container)

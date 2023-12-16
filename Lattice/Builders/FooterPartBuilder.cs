@@ -4,13 +4,13 @@ using Lattice.Nodes;
 
 namespace Lattice.Builders;
 
-[Export(typeof(IPagePartBuilder))]
-[AutoConstructor]
-public partial class FooterPartBuilder : IPagePartBuilder
+[Export<IPagePartBuilder>]
+public class FooterPartBuilder(
+    ContainerBuilder ContainerBuilder,
+    ContainerMutator ContainerMutator
+)
+    : IPagePartBuilder
 {
-    private readonly ContainerBuilder ContainerBuilder;
-    private readonly ContainerMutator ContainerMutator;
-
     public NodeType Type => NodeType.Footer;
 
     public void Build(Node node, PageDescriptor page)

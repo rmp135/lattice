@@ -2,7 +2,7 @@
 
 namespace Lattice;
 
-[Export(typeof(ColourConverter))]
+[Export<ColourConverter>]
 public class ColourConverter
 {
     /// <summary>

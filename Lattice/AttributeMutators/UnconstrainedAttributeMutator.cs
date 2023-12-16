@@ -4,7 +4,7 @@ using QuestPDF.Infrastructure;
 
 namespace Lattice.AttributeMutators;
 
-[Export(typeof(IAttributeMutator))]
+[Export<IAttributeMutator>]
 public class UnconstrainedAttributeMutator : IAttributeMutator
 {
     public string Name => "unconstrained";

@@ -4,7 +4,7 @@ using org.matheval;
 
 namespace Lattice;
 
-[Export(typeof(ExpressionHelper))]
+[Export<ExpressionHelper>]
 public class ExpressionHelper
 {
     public string RunExpression(Node node, string token)
@@ -37,7 +37,7 @@ public class ExpressionHelper
         {
             return expression.Eval()?.ToString() ?? "";
         }
-        catch (Exception e)
+        catch (Exception)
         {
             return token;
         }

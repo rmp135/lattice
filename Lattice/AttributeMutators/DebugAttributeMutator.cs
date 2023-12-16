@@ -3,7 +3,7 @@ using QuestPDF.Infrastructure;
 
 namespace Lattice.AttributeMutators;
 
-[Export(typeof(IAttributeMutator))]
+[Export<IAttributeMutator>]
 public class DebugAttributeMutator : BaseAttributeMutator
 {
     public override string Name => "debug";

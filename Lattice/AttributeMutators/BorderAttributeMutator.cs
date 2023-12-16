@@ -11,7 +11,7 @@ public abstract class BaseBorderAttributeMutator : BaseAttributeMutator
     }
 }
 
-[Export(typeof(IAttributeMutator))]
+[Export<IAttributeMutator>]
 public class BorderAttributeMutator : BaseBorderAttributeMutator
 {
     public override string Name => "border";
@@ -22,7 +22,7 @@ public class BorderAttributeMutator : BaseBorderAttributeMutator
     }
 }
 
-[Export(typeof(IAttributeMutator))]
+[Export<IAttributeMutator>]
 public class BorderLeftAttributeMutator : BaseBorderAttributeMutator
 {
     public override string Name => "borderLeft";
@@ -33,7 +33,7 @@ public class BorderLeftAttributeMutator : BaseBorderAttributeMutator
     }
 }
 
-[Export(typeof(IAttributeMutator))]
+[Export<IAttributeMutator>]
 public class BorderRightAttributeMutator : BaseBorderAttributeMutator
 {
     public override string Name => "borderRight";
@@ -44,7 +44,7 @@ public class BorderRightAttributeMutator : BaseBorderAttributeMutator
     }
 }
 
-[Export(typeof(IAttributeMutator))]
+[Export<IAttributeMutator>]
 public class BorderTopAttributeMutator : BaseBorderAttributeMutator
 {
     public override string Name => "borderTop";
@@ -55,7 +55,7 @@ public class BorderTopAttributeMutator : BaseBorderAttributeMutator
     }
 }
 
-[Export(typeof(IAttributeMutator))]
+[Export<IAttributeMutator>]
 public class BorderBottomAttributeMutator : BaseBorderAttributeMutator
 {
     public override string Name => "borderBottom";
@@ -66,7 +66,7 @@ public class BorderBottomAttributeMutator : BaseBorderAttributeMutator
     }
 }
 
-[Export(typeof(IAttributeMutator))]
+[Export<IAttributeMutator>]
 public class BorderVerticalAttributeMutator : BaseBorderAttributeMutator
 {
     public override string Name => "borderVertical";
@@ -77,7 +77,7 @@ public class BorderVerticalAttributeMutator : BaseBorderAttributeMutator
     }
 }
 
-[Export(typeof(IAttributeMutator))]
+[Export<IAttributeMutator>]
 public class BorderHorizontalAttributeMutator : BaseBorderAttributeMutator
 {
     public override string Name => "borderHorizontal";

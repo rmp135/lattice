@@ -6,12 +6,9 @@ namespace Lattice;
 /// <summary>
 /// Methods concerning replacing the tokens from context.
 /// </summary>
-[Export(typeof(ContextReplacer))]
-[AutoConstructor]
-public partial class ContextReplacer
+[Export<ContextReplacer>]
+public class ContextReplacer(ExpressionHelper ExpressionHelper)
 {
-    private readonly ExpressionHelper ExpressionHelper;
-
     /// <summary>
     /// Replaces all tokens in a given text string, given the context of a Node.
     /// </summary>

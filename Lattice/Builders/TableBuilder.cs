@@ -7,13 +7,13 @@ using QuestPDF.Elements.Table;
 
 namespace Lattice.Builders;
 
-[Export(typeof(IContainerBuilder))]
-[AutoConstructor]
-public partial class TableBuilder : IContainerBuilder
+[Export<IContainerBuilder>]
+public class TableBuilder(
+    ContainerBuilder ContainerBuilder,
+    ContainerMutator ContainerMutator
+)
+    : IContainerBuilder
 {
-    private readonly ContainerBuilder ContainerBuilder;
-    private readonly ContainerMutator ContainerMutator;
-
     public NodeType Type => NodeType.Table;
 
     public void Build(Node node, IContainer container)

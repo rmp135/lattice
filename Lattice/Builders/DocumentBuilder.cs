@@ -13,12 +13,9 @@ public interface IDocumentBuilder
     Document Build(Node node);
 }
 
-[Export(typeof(IDocumentBuilder))]
-[AutoConstructor]
-internal partial class DocumentBuilder : IDocumentBuilder
+[Export<IDocumentBuilder>]
+internal class DocumentBuilder(PageBuilder PageBuilder) : IDocumentBuilder
 {
-    private readonly PageBuilder PageBuilder;
-
     public Document Build(Node node)
     {
         var doc = Document.Create(document =>

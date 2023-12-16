@@ -4,21 +4,12 @@ using Lattice.Nodes;
 
 namespace Lattice.AttributeMutators;
 
-[Export(typeof(ContainerMutator))]
-public class ContainerMutator
+[Export<ContainerMutator>]
+public class ContainerMutator(
+    IEnumerable<IAttributeMutator> AttributeMutators,
+    TextStyleMutator TextStyleMutator
+)
 {
-    private readonly IEnumerable<IAttributeMutator> AttributeMutators;
-    private readonly TextStyleMutator TextStyleMutator;
-
-    public ContainerMutator(
-        IEnumerable<IAttributeMutator> attributeMutators,
-        TextStyleMutator textStyleMutator
-    )
-    {
-        AttributeMutators = attributeMutators;
-        TextStyleMutator = textStyleMutator;
-    }
-
     public IContainer Mutate(IContainer container, Node node)
     {
         var newContainer = container.DefaultTextStyle(s => TextStyleMutator.Mutate(s, node));

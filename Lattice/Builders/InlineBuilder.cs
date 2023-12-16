@@ -5,13 +5,13 @@ using Lattice.Nodes;
 
 namespace Lattice.Builders;
 
-[Export(typeof(IContainerBuilder))]
-[AutoConstructor]
-public partial class InlinedBuilder : IContainerBuilder
+[Export<IContainerBuilder>]
+public class InlinedBuilder(
+    ContainerBuilder ContainerBuilder,
+    ContainerMutator ContainerMutator
+)
+    : IContainerBuilder
 {
-    private readonly ContainerBuilder ContainerBuilder;
-    private readonly ContainerMutator ContainerMutator;
-
     public NodeType Type => NodeType.Inline;
 
     public void Build(Node node, IContainer container)

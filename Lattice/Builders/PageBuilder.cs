@@ -6,14 +6,13 @@ using QuestPDF.Helpers;
 
 namespace Lattice.Builders;
 
-[Export(typeof(PageBuilder))]
-[AutoConstructor]
-public partial class PageBuilder
+[Export<PageBuilder>]
+public class PageBuilder(
+    IEnumerable<IPagePartBuilder> PageBuilders,
+    TextStyleMutator TextStyleMutator,
+    ColourConverter ColourConverter
+)
 {
-    private readonly IEnumerable<IPagePartBuilder> PageBuilders;
-    private readonly TextStyleMutator TextStyleMutator;
-    private readonly ColourConverter ColourConverter; 
-
     public void Build(Node node, IDocumentContainer documentContainer)
     {
         documentContainer.Page(page =>

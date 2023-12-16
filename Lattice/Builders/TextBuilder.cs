@@ -7,15 +7,15 @@ using Lattice.Nodes;
 
 namespace Lattice.Builders;
 
-[Export(typeof(IContainerBuilder))]
-[AutoConstructor]
-public partial class TextBuilder : IContainerBuilder
+[Export<IContainerBuilder>]
+public class TextBuilder(
+    TextStyleMutator TextStyleMutator,
+    ContextReplacer ContextReplacer,
+    ContainerMutator ContainerMutator,
+    IEnumerable<IAggregator> Aggregators
+)
+    : IContainerBuilder
 {
-    private readonly TextStyleMutator StyleMutator;
-    private readonly ContextReplacer ContextReplacer;
-    private readonly ContainerMutator ContainerMutator;
-    private readonly IEnumerable<IAggregator> Aggregators;
-
     public NodeType Type => NodeType.Text;
 
     public void Build(Node node, IContainer container)
@@ -26,7 +26,7 @@ public partial class TextBuilder : IContainerBuilder
         if (string.IsNullOrEmpty(value)) return;
         newContainer.Text(textDescriptor =>
         {
-            textDescriptor.DefaultTextStyle(s => StyleMutator.Mutate(s, node));
+            textDescriptor.DefaultTextStyle(s => TextStyleMutator.Mutate(s, node));
             var align = node.GetAttribute("align");
             if (align == "center")
                 textDescriptor.AlignCenter();
@@ -105,7 +105,7 @@ public abstract class BaseAggregator : IAggregator
     protected abstract string Aggregate(IEnumerable<KeyValuePair<string, object>> set, GroupCollection groups);
 }
 
-[Export(typeof(IAggregator))]
+[Export<IAggregator>]
 public class SumAggregator: BaseAggregator
 {
     protected override Regex Regex { get; } =  new Regex(@"SUM\((\w+)\.(\w+)\)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
@@ -122,7 +122,7 @@ public class SumAggregator: BaseAggregator
     }
 }
 
-[Export(typeof(IAggregator))]
+[Export<IAggregator>]
 public class AvgAggregator: BaseAggregator
 {
     protected override Regex Regex { get; } = new Regex(@"(?:AVG|AVERAGE)\((\w+)\.(\w+)(?:,(\W*[0-9]+))?\)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
@@ -147,7 +147,7 @@ public class AvgAggregator: BaseAggregator
 }
 
 
-[Export(typeof(IAggregator))]
+[Export<IAggregator>]
 public class MinAggregator: BaseAggregator
 {
     protected override Regex Regex { get; } = new Regex(@"MIN\((\w+)\.(\w+)\)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
@@ -165,7 +165,7 @@ public class MinAggregator: BaseAggregator
     }
 }
 
-[Export(typeof(IAggregator))]
+[Export<IAggregator>]
 public class MaxAggregator: BaseAggregator
 {
     protected override Regex Regex { get; } = new Regex(@"MAX\((\w+)\.(\w+)\)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
@@ -183,7 +183,7 @@ public class MaxAggregator: BaseAggregator
     }
 }
 
-[Export(typeof(IAggregator))]
+[Export<IAggregator>]
 public class CountAggregator: IAggregator
 {
     private readonly Regex regex = new Regex(@"COUNT\((\w+)\)", RegexOptions.Compiled | RegexOptions.IgnoreCase);

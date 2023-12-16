@@ -4,18 +4,9 @@ using Lattice.Nodes;
 
 namespace Lattice.AttributeMutators;
 
-[Export(typeof(TextStyleMutator))]
-public class TextStyleMutator
+[Export<TextStyleMutator>]
+public class TextStyleMutator(ColourConverter ColourConverter, ContextReplacer ContextReplacer)
 {
-    private readonly ColourConverter ColourConverter;
-    private readonly ContextReplacer ContextReplacer;
-
-    public TextStyleMutator(ColourConverter colourConverter, ContextReplacer contextReplacer)
-    {
-        ColourConverter = colourConverter;
-        ContextReplacer = contextReplacer;
-    }
-
     public TextStyle Mutate(TextStyle textStyle, Node node)
     {
         var style = textStyle;

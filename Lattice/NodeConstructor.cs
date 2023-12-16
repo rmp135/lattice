@@ -20,12 +20,9 @@ public interface INodeConstructor
 /// <summary>
 /// Expands a node tree, assigning context from a data source.
 /// </summary>
-[Export(typeof(INodeConstructor))]
-[AutoConstructor]
-public partial class NodeConstructor : INodeConstructor
+[Export<INodeConstructor>]
+public class NodeConstructor(ContextReplacer ContextReplacer) : INodeConstructor
 {
-    private readonly ContextReplacer ContextReplacer;
-
     public Task ConstructAsync(Node node) => ConstructAsync(node, new FakeSource());
 
     public async Task ConstructAsync(Node node, ISource source)
@@ -240,7 +237,6 @@ public partial class NodeConstructor : INodeConstructor
     public IEnumerable<Node> ExpandForWithData(Node node, string contextKey, IEnumerable<IDictionary<string, object>> data)
     {
         node.RemoveAttribute("for");
-        var parentNode = node.ParentNode;
         
         var orderByAsc = node.GetAttribute("orderByAsc");
         var orderByDesc = node.GetAttribute("orderByDesc");

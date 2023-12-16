@@ -3,7 +3,7 @@ using QuestPDF.Infrastructure;
 
 namespace Lattice.AttributeMutators;
 
-[Export(typeof(IAttributeMutator))]
+[Export<IAttributeMutator>]
 public class HeightAttributeMutator : BaseAttributeMutator
 {
     public override string Name => "height";
@@ -19,7 +19,7 @@ public class HeightAttributeMutator : BaseAttributeMutator
     }
 }
 
-[Export(typeof(IAttributeMutator))]
+[Export<IAttributeMutator>]
 public class MaxHeightAttributeMutator : BaseAttributeMutator
 {
     public override string Name => "maxHeight";
@@ -35,7 +35,7 @@ public class MaxHeightAttributeMutator : BaseAttributeMutator
     }
 }
 
-[Export(typeof(IAttributeMutator))]
+[Export<IAttributeMutator>]
 public class MinHeightAttributeMutator : BaseAttributeMutator
 {
     public override string Name => "minHeight";

@@ -11,7 +11,7 @@ public abstract class BasePaddingAttributeMutator : BaseAttributeMutator
     }
 }
 
-[Export(typeof(IAttributeMutator))]
+[Export<IAttributeMutator>]
 public class PaddingAttributeMutator : BasePaddingAttributeMutator
 {
     public override string Name => "padding";
@@ -22,7 +22,7 @@ public class PaddingAttributeMutator : BasePaddingAttributeMutator
     }
 }
 
-[Export(typeof(IAttributeMutator))]
+[Export<IAttributeMutator>]
 public class PaddingTopAttributeMutator : BasePaddingAttributeMutator
 {
     public override string Name => "paddingTop";
@@ -32,7 +32,7 @@ public class PaddingTopAttributeMutator : BasePaddingAttributeMutator
     }
 }
 
-[Export(typeof(IAttributeMutator))]
+[Export<IAttributeMutator>]
 public class PaddingBottomAttributeMutator : BasePaddingAttributeMutator
 {
     public override string Name => "paddingBottom";
@@ -42,7 +42,7 @@ public class PaddingBottomAttributeMutator : BasePaddingAttributeMutator
     }
 }
 
-[Export(typeof(IAttributeMutator))]
+[Export<IAttributeMutator>]
 public class PaddingHorizontalAttributeMutator : BasePaddingAttributeMutator
 {
     public override string Name => "paddingHorizontal";
@@ -52,7 +52,7 @@ public class PaddingHorizontalAttributeMutator : BasePaddingAttributeMutator
     }
 }
 
-[Export(typeof(IAttributeMutator))]
+[Export<IAttributeMutator>]
 public class PaddingVerticalAttributeMutator : BasePaddingAttributeMutator
 {
     public override string Name => "paddingVertical";
@@ -62,7 +62,7 @@ public class PaddingVerticalAttributeMutator : BasePaddingAttributeMutator
     }
 }
 
-[Export(typeof(IAttributeMutator))]
+[Export<IAttributeMutator>]
 public class PaddingLeftAttributeMutator : BasePaddingAttributeMutator
 {
     public override string Name => "paddingLeft";
@@ -73,7 +73,7 @@ public class PaddingLeftAttributeMutator : BasePaddingAttributeMutator
 }
 
 
-[Export(typeof(IAttributeMutator))]
+[Export<IAttributeMutator>]
 public class PaddingRightAttributeMutator : BasePaddingAttributeMutator
 {
     public override string Name => "paddingRight";

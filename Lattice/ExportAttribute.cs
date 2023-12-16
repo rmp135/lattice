@@ -10,14 +10,11 @@ public enum ExportScope
 /// Internal helper attribute that will auto-import into the DI container.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
-internal class ExportAttribute : Attribute
-{
-    public Type Type { get; }
-    private ExportScope Scope { get; }
+internal class ExportAttribute<T>(ExportScope scope = ExportScope.Singleton) : ExportAttribute(typeof(T), scope);
 
-    public ExportAttribute(Type type, ExportScope scope = ExportScope.Singleton)
-    {
-        Type = type;
-        Scope = scope;
-    }
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
+internal class ExportAttribute(Type Type, ExportScope scope = ExportScope.Singleton) : Attribute
+{
+    public ExportScope Scope { get; } = scope;
+    public Type Type { get; } = Type;
 }

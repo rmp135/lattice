@@ -5,12 +5,9 @@ using Lattice.Nodes;
 
 namespace Lattice.Builders;
 
-[Export(typeof(IContainerBuilder))]
-[AutoConstructor]
-public partial class PageBreakBuilder : IContainerBuilder
+[Export<IContainerBuilder>]
+public class PageBreakBuilder(ContainerMutator ContainerMutator) : IContainerBuilder
 {
-    private readonly ContainerMutator ContainerMutator;
-
     public NodeType Type => NodeType.PageBreak;
 
     public void Build(Node node, IContainer container)

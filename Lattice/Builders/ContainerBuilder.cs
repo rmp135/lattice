@@ -4,20 +4,15 @@ using Lattice.Nodes;
 
 namespace Lattice.Builders;
 
-[Export(typeof(ContainerBuilder))]
-public class ContainerBuilder
+[Export<ContainerBuilder>]
+public class ContainerBuilder(
+    IServiceProvider ServiceProvider,
+    IEnumerable<ILatticePlugin> Plugins
+)
 {
-    private readonly Lazy<IEnumerable<IContainerBuilder>> ContainerBuilders;
-    private readonly IEnumerable<ILatticePlugin> Plugins;
+    private readonly Lazy<IEnumerable<IContainerBuilder>> ContainerBuilders = new(ServiceProvider.GetServices<IContainerBuilder>);
 
-    public ContainerBuilder(IServiceProvider serviceProvider,
-        IEnumerable<ILatticePlugin> plugins
-    )
-    {
-        // Because of the self-referencing nature of the builders, we must lazy load them.
-        ContainerBuilders = new Lazy<IEnumerable<IContainerBuilder>>(serviceProvider.GetServices<IContainerBuilder>);
-        Plugins = plugins;
-    }
+    // Because of the self-referencing nature of the builders, we must lazy load them.
 
     /// <summary>
     /// Recursively builds a <see cref="Node"/>, using a factory function for the container. Used when each child must sit inside a different container supplied by the parent. 

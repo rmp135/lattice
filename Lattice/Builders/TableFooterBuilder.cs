@@ -1,8 +1,9 @@
-﻿namespace Lattice.Builders;
+﻿using Lattice.AttributeMutators;
 
-[Export(typeof(IContainerBuilder))]
-[AutoConstructor]
-public partial class TableFooterBuilder : TableRowBuilder
+namespace Lattice.Builders;
+
+[Export<IContainerBuilder>]
+public class TableFooterBuilder(ContainerBuilder ContainerBuilder, ContainerMutator ContainerMutator) : TableRowBuilder(ContainerBuilder, ContainerMutator)
 {
     public override NodeType Type => NodeType.TableFooter;
 }
