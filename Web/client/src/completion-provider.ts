@@ -39,42 +39,8 @@ function getLastOpenedTag(text): { tagName: string, isAttributeSearch: boolean }
   }
 }
 
-function isItemAvailable(itemName, maxOccurs, items) {
-  // the default for 'maxOccurs' is 1
-  maxOccurs = maxOccurs || '1';
-  // the element can appear infinite times, so it is available
-  if (maxOccurs && maxOccurs === 'unbounded') {
-    return true;
-  }
-  // count how many times the element appeared
-  let count = 0;
-  for (let i = 0; i < items.length; i++) {
-    if (items[i] === itemName) {
-      count++;
-    }
-  }
-  // if it didn't appear yet, or it can appear again, then it
-  // is available, otherwise is not
-  return count === 0 || parseInt(maxOccurs) > count;
-}
-
-function findAttributes(elements) {
-  const attrs = [];
-  for (let element of elements) {
-    // skip level if it is a 'complexType' tag
-    if (element.tagName === 'complexType') {
-      const child = findAttributes(element.children);
-      if (child) {
-        return child;
-      }
-    }
-      // we need only those XSD elements that have a
-    // tag 'attribute'
-    else if (element.tagName === 'attribute') {
-      attrs.push(element);
-    }
-  }
-  return attrs;
+function isItemAvailable(itemName: string, items: string[]): boolean {
+  return !items.includes(itemName);
 }
 
 function getAvailableAttribute(monaco, lastOpenedTag, usedChildTags) {
@@ -90,12 +56,12 @@ function getAvailableAttribute(monaco, lastOpenedTag, usedChildTags) {
   for (let attribute of info.attributes) {
     // get all attributes for the element
     // accept it in a suggestion list only if it is available
-    if (isItemAvailable(attribute.name, attribute.maxOccurs, usedChildTags)) {
+    if (isItemAvailable(attribute.name, usedChildTags)) {
       // mark it as a 'property', and get the documentation
       availableItems.push({
         suggestions: [],
         label: attribute.name,
-        insertText: `${attribute.name}="$\{1\}"`,
+        insertText: attribute.empty ? attribute.name : `${attribute.name}="$\{1\}"`,
         kind: monaco.languages.CompletionItemKind.Property,
         insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
         detail: attribute.detail,
