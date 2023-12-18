@@ -93,7 +93,7 @@ public class DissolveVirtualNodesTests : NodeConstructorTestsBase
         var node = new Node(NodeType.Column);
         
         var childNode = new Node(NodeType.Virtual);
-        childNode.Context.Add("test", new StringContextValue("value"));
+        childNode.Context.Add("test", new ObjectContextValue("value"));
         node.ChildNodes.Add(childNode);
         
         var gChildNode1 = new Node(NodeType.Column);
@@ -104,7 +104,7 @@ public class DissolveVirtualNodesTests : NodeConstructorTestsBase
         Assert.That(node.ChildNodes.Count, Is.EqualTo(1));
         Assert.That(node.ChildNodes, Is.EquivalentTo(new[] { gChildNode1 }));
         Assert.That(gChildNode1.Context, Contains.Key("test"));
-        Assert.That(gChildNode1.Context["test"], Is.InstanceOf<StringContextValue>());
+        Assert.That(gChildNode1.Context["test"], Is.InstanceOf<ObjectContextValue>());
         Assert.That(gChildNode1.Context["test"].ToString(), Is.EqualTo("value"));
     }
 }

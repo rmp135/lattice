@@ -37,12 +37,12 @@ public class ExpandRepeatTests : NodeConstructorTestsBase
         
         Assert.That(resultArray[0].GetAttribute("repeat"), Is.Null);
         Assert.That(resultArray[1].Context, Contains.Key("$index"));
-        Assert.That(resultArray[1].Context["$index"], Is.TypeOf<StringContextValue>());
+        Assert.That(resultArray[1].Context["$index"], Is.TypeOf<ObjectContextValue>());
         Assert.That(resultArray[0].Context["$index"].ToString(), Is.EqualTo("0"));
         
         Assert.That(resultArray[1].GetAttribute("repeat"), Is.Null);
         Assert.That(resultArray[1].Context, Contains.Key("$index"));
-        Assert.That(resultArray[1].Context["$index"], Is.TypeOf<StringContextValue>());
+        Assert.That(resultArray[1].Context["$index"], Is.TypeOf<ObjectContextValue>());
         Assert.That(resultArray[1].Context["$index"].ToString(), Is.EqualTo("1"));
     }
     

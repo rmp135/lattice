@@ -155,6 +155,10 @@ public class Node
         return Context.TryGetValue(key, out var value) ? value : ParentNode?.GetContextValue(key);
     }
 
+    /// <summary>
+    /// Returns all context values for this <see cref="Node"/> and all parent nodes.
+    /// </summary>
+    /// <returns></returns>
     public Dictionary<string, ContextValue> GetAllContextValues()
     {
         var values = Context.ToDictionary(contextValue => contextValue.Key, contextValue => contextValue.Value);
@@ -186,6 +190,10 @@ public class Node
         return node;
     }
 
+    /// <summary>
+    /// Returns a list of template nodes that can be applied to this node.
+    /// This includes all template nodes recursively up the tree.
+    /// </summary>
     public virtual IEnumerable<Node> GetApplicableTemplateNodes()
     {
         return ParentNode == null 
@@ -199,9 +207,9 @@ public class Node
 /// <summary>
 /// A base context value consisting of a string key and object value.
 /// </summary>
-public abstract class ContextValue :IEnumerable<IDictionary<string, object>>
+public abstract class ContextValue : IEnumerable<IDictionary<string, object?>>
 {
-    public abstract IEnumerator<IDictionary<string, object>> GetEnumerator();
+    public abstract IEnumerator<IDictionary<string, object?>> GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator()
     {
@@ -212,18 +220,9 @@ public abstract class ContextValue :IEnumerable<IDictionary<string, object>>
 /// <summary>
 /// A context that has been grouped by a particular key. The grouped values can be enumerated.
 /// </summary>
-public class GroupedContextValue : ContextValue
+public class GroupedContextValue(string key, IEnumerable<IDictionary<string, object?>> data) : ContextValue
 {
-    private readonly IEnumerable<IDictionary<string, object>> data;
-    private readonly string key;
-
-    public GroupedContextValue(string key, IEnumerable<IDictionary<string, object>> data)
-    {
-        this.key = key;
-        this.data = data;
-    }
-
-    public override IEnumerator<IDictionary<string, object>> GetEnumerator()
+    public override IEnumerator<IDictionary<string, object?>> GetEnumerator()
     {
         return data.GetEnumerator();
     }
@@ -237,25 +236,28 @@ public class GroupedContextValue : ContextValue
 /// <summary>
 /// An ungrouped context value. Attempting to enumerate the values will enumerate the string chars.
 /// </summary>
-public class StringContextValue : ContextValue
+public class ObjectContextValue(object? value) : ContextValue
 {
-    private readonly string value;
-
-    public StringContextValue(string value)
+    public override IEnumerator<IDictionary<string, object?>> GetEnumerator()
     {
-        this.value = value;
-    }
-
-    public override IEnumerator<IDictionary<string, object>> GetEnumerator()
-    {
-        foreach (var c in value)
+        if (value is int valueAsInt)
         {
-            yield return new Dictionary<string, object>{["value"] = c};
+            for (var i = 0; i < valueAsInt; i++)
+            {
+                yield return new Dictionary<string, object?> {["value"] = i};
+            }
+        }
+        if (value is string valueAsString)
+        {
+            foreach (var c in valueAsString)
+            {
+                yield return new Dictionary<string, object?> {["value"] = c};
+            }
         }
     }
 
     public override string ToString()
     {
-        return value;
+        return value?.ToString() ?? "";
     }
 }
