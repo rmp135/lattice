@@ -50,7 +50,7 @@ import * as monaco from 'monaco-editor'
 import { onMounted, ref } from 'vue'
 import { getXmlCompletionProvider, getXmlHoverProvider } from './completion-provider'
 import { debounce } from 'lodash'
-import Examples from "./examples"
+import Examples from './examples'
 
 let editor = null
 const iframeSrc = ref(``)

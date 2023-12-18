@@ -1,0 +1,61 @@
+<Document>
+  <Page margin="20">
+    <Content>
+      <Column spacing="5">
+        <Text align="center" fontEmphasis="bold" fontSize="20">Tables</Text>
+        <Text>Tables are created via the Table, TableHeader, TableFooter and TableRow elements.</Text>
+        <Text>TableHeader and TableFooter are effectively the same as TableRow, however they repeat on each page the table rolls over.</Text>
+        <Text>Each element represents a row, and each child element is a column cell of that row.</Text>
+        <Text>The use of "repeat" or "for" attributes are typically used to bind data to the rows.</Text>
+        <Text fontEmphasis="bold">Repeat</Text>
+        <Table border="1" padding="5">
+          <TableHeader fontEmphasis="bold">
+            <Text>Column 1</Text>
+            <Text>Column 2</Text>
+            <Text>Column 3</Text>
+          </TableHeader>
+          <TableRow repeat="4">
+            <Text>Row {$index + 1}, Column 1</Text>
+            <Text>Row {$index + 1}, Column 2</Text>
+            <Text>Row {$index + 1}, Column 3</Text>
+          </TableRow>
+        </Table>
+        <Text fontEmphasis="bold">For</Text>
+        <Table border="1" padding="5">
+          <TableHeader fontEmphasis="bold">
+            <Text>Name</Text>
+            <Text>Symbol</Text>
+            <Text>Atomic Mass</Text>
+          </TableHeader>
+          <TableRow for="element in Elements">
+            <Text>{element.Element}</Text>
+            <Text>{element.Symbol}</Text>
+            <Text>{element.AtomicMass}</Text>
+          </TableRow>
+        </Table>
+        <PageBreak />
+        <Text fontEmphasis="bold">Virtual</Text>
+        <Text>TableCells must be a direct child of a table but sometimes we require loops within loops. </Text>
+        <Text>Virtual elements are removed during construction, allowing for looping on a group, then looping on the data of that group.</Text>
+        <Text>The Virtual uses a for with a groupBy, and contains a single TableCell with the group header, and a repeating TableCell for each record of the group.</Text>
+        <Table border="1" padding="5">
+          <TableHeader fontEmphasis="bold">
+            <Text>Name</Text>
+            <Text>Symbol</Text>
+            <Text>Atomic Mass</Text>
+          </TableHeader>
+          <Virtual for="phases in Elements" groupBy="Phase">
+            <TableRow>
+              <Text borderBottom="1" fontEmphasis="bold" columnSpan="3">{phases.Phase}</Text>
+            </TableRow>
+            <TableRow for="phase in {phases}">
+              <Text>{phase.Element}</Text>
+              <Text>{phase.Symbol}</Text>
+              <Text>{phase.AtomicMass}</Text>
+            </TableRow>
+          </Virtual>
+        </Table>
+      </Column>
+    </Content>
+  </Page>
+</Document>
