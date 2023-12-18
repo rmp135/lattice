@@ -21,7 +21,7 @@ public interface INodeConstructor
 /// Expands a node tree, assigning context from a data source.
 /// </summary>
 [Export<INodeConstructor>]
-public class NodeConstructor(ContextReplacer ContextReplacer) : INodeConstructor
+public partial class NodeConstructor(ContextReplacer ContextReplacer) : INodeConstructor
 {
     public Task ConstructAsync(Node node) => ConstructAsync(node, new FakeSource());
 
@@ -191,13 +191,22 @@ public class NodeConstructor(ContextReplacer ContextReplacer) : INodeConstructor
     {
         var bindStr = node.GetAttribute("bind");
         if (bindStr is null) return;
-        var matches = new Regex(@"(.+) in (.+)").Matches(bindStr);
+        var matches = ForLoopRegex().Matches(bindStr);
         if (!matches.Any()) return;
         var contextKey = matches[0].Groups[1].Value;
         var contextValue = matches[0].Groups[2].Value;
 
-        var data = await source.GetValues(ContextReplacer.ReplaceTokens(contextValue, node));
-        node.ReplaceContextKey($"{contextKey}", new GroupedContextValue(contextKey, data.ToArray()));
+        var data = (await source.GetValues(ContextReplacer.ReplaceTokens(contextValue, node))).ToArray();
+        node.ReplaceContextKey($"{contextKey}", new GroupedContextValue(contextKey, data));
+        // Bind also binds the first item in the array for ease of use.
+        var firstResult = data.FirstOrDefault();
+        if (firstResult != null)
+        {
+            foreach (var dataItem in firstResult)
+            {
+                node.ReplaceContextKey(dataItem.Key, new ObjectContextValue(dataItem.Value));
+            }
+        }
     }
     
     /// <summary>
@@ -277,32 +286,35 @@ public class NodeConstructor(ContextReplacer ContextReplacer) : INodeConstructor
                 {
                     foreach (var key in group.Value.First())
                     {
-                        newNode.Context.Add($"{contextKey}.{key.Key}",
-                            new StringContextValue(key.Value?.ToString() ?? ""));
+                        newNode.Context.Add($"{contextKey}.{key.Key}", new ObjectContextValue(key.Value));
                     }
                 }
 
                 newNode.ReplaceContextKey(contextKey, new GroupedContextValue(contextKey, group.Value));
-                newNode.ReplaceContextKey($"{contextKey}.index", new StringContextValue(i.ToString()));
+                newNode.ReplaceContextKey($"{contextKey}.index", new ObjectContextValue(i));
 
                 newNodes.Add(newNode);
             }
+
         }
 
         // Not grouped.
-        for (var i = 0; i < dataArr.Length; i++)
+        else
         {
-            var row = dataArr[i];
-            var newNode = node.DeepClone();
-            newNode.Context.Add($"{contextKey}", new GroupedContextValue(contextKey, dataArr));
-            foreach (var key in row.Keys)
+            for (var i = 0; i < dataArr.Length; i++)
             {
-                newNode.Context.Add($"{contextKey}.{key}", new StringContextValue(row[key].ToString() ?? ""));
-                newNode.Context.Remove($"{contextKey}.$index");
-                newNode.Context.Add($"{contextKey}.$index", new StringContextValue(i.ToString()));
-            }
+                var row = dataArr[i];
+                var newNode = node.DeepClone();
+                newNode.Context.Add($"{contextKey}", new GroupedContextValue(contextKey, dataArr));
+                foreach (var key in row.Keys)
+                {
+                    newNode.Context.Add($"{contextKey}.{key}", new ObjectContextValue(row[key]));
+                    newNode.Context.Remove($"{contextKey}.$index");
+                    newNode.Context.Add($"{contextKey}.$index", new ObjectContextValue(i));
+                }
 
-            newNodes.Add(newNode);
+                newNodes.Add(newNode);
+            }
         }
 
         return newNodes;
@@ -324,9 +336,12 @@ public class NodeConstructor(ContextReplacer ContextReplacer) : INodeConstructor
         {
             var newNode = node.DeepClone();
             newNode.Context.Remove("$index");
-            newNode.Context.Add("$index", new StringContextValue(i.ToString()));
+            newNode.Context.Add("$index", new ObjectContextValue(i));
             newNodes.Add(newNode);
         }
         return newNodes;
     }
+
+    [GeneratedRegex(@"(.+) in (.+)")]
+    private static partial Regex ForLoopRegex();
 }
