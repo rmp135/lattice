@@ -11,20 +11,13 @@ using HtmlAgilityPack;
 namespace Lattice.Web.Routes;
 
 [Route("api/[controller]")]
-public class PDFController : Controller
+public class PDFController(
+    INodeConstructor NodeConstructor,
+    IDocumentBuilder DocumentBuilder,
+    PreviewStorage PreviewStorage
+) : Controller
 {
-    private readonly INodeConstructor NodeConstructor;
-    private readonly IDocumentBuilder DocumentBuilder;
-    private readonly PreviewStorage _previewStorage;
-
     private readonly ISource _source = new CSVSource("Data/Sources/Elements.csv");
-    
-    public PDFController(INodeConstructor nodeConstructor, IDocumentBuilder documentBuilder, PreviewStorage previewStorage)
-    {
-        NodeConstructor = nodeConstructor;
-        DocumentBuilder = documentBuilder;
-        _previewStorage = previewStorage;
-    }
 
     private Node NodeFromXML(HtmlNode xmlNode)
     {
@@ -65,14 +58,14 @@ public class PDFController : Controller
             );
         }
 
-        var id =  _previewStorage.AddToStore(bodyString);
+        var id =  PreviewStorage.AddToStore(bodyString);
         return new OkObjectResult(id);
     }
     
     [HttpGet("")]
     public async Task<IActionResult> Index([FromQuery] string id)
     {
-        var xmlAsString = _previewStorage.Get(id);
+        var xmlAsString = PreviewStorage.Get(id);
         if (xmlAsString is null) return new NotFoundResult();
         var doc = new HtmlDocument();
         doc.LoadHtml(xmlAsString);
